@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KD landing page</title>
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet">
+
+
+    <!-- Tailwind -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <!-- Alpine -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"
+    ></script>
+
+    <style type="text/tailwindcss">
+      @theme {
+        --font-noto-sans-tc: "Noto Sans TC", sans-serif;
+        --color-muji-white: #F2F1EE;
+      }
+
+      @layer base {
+        html {
+          font-size: 16px;
+          @apply font-noto-sans-tc;
+        }
+      }
+
+      [x-cloak] {
+        display: none;
+      }
+
+      @layer components {}
+    </style>
+  </head>
+
+  <body>
+    <main class="max-w-[390px] mx-auto">
+      <footer class="flex justify-between items-center py-2.5 px-7.5">
+        <img src="./assets/logo.svg" alt="logo" class="w-auto h-3">
+        <p class="leaing-2.5 text-[#787878] text-[0.375rem] text-right">Copyright©Ryohin Keikaku Co., Ltd. ©MUJI (Taiwan) Co., Ltd.<br/>
+        All rights reserved.擁有及保留本網站所有權利。</p>
+      </footer>
+    </main>
+  </body>
+ </html>
