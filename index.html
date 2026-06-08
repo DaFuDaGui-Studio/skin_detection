@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KD landing page</title>
+    <title>MUJI</title>
     <!-- Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,6 +18,9 @@
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"
     ></script>
+
+    <!-- Anime.js -->
+    <script src="https://cdn.jsdelivr.net/npm/animejs/dist/bundles/anime.umd.min.js"></script>
 
     <style type="text/tailwindcss">
       @theme {
@@ -130,6 +133,27 @@
         50%      { transform: scale(1.06); }
       }
       .animate-pulse-scale { animation: pulse-scale 1.6s ease-in-out infinite; }
+      
+      /* result 全白畫面轉場 */
+      @keyframes circle-reveal {
+        from { clip-path: circle(0px at 50% 171px); }
+        to   { clip-path: circle(150% at 50% 171px); }
+      }
+
+      #result {
+        clip-path: circle(0px at 50% 171px);
+        animation: circle-reveal 1.5s ease-out 0.5s forwards;
+      }
+
+      /* 守護神剪影旋轉 */
+
+      @keyframes spin {
+        to { rotate: 1turn; }
+      }
+
+      .shadow-animal {
+        animation: spin 4s linear infinite;
+      }
     </style>
   </head>
 
@@ -138,6 +162,7 @@
       x-data="quiz()"
       x-cloak
       class="relative mx-auto w-full max-w-[390px] min-h-screen md:min-h-0 md:h-[690px] flex flex-col bg-muji-white shadow-[0_0_60px_rgba(0,0,0,0.08)] overflow-hidden"
+      :class="screen === 'result' ? '!md:h-auto !overflow-y-auto' : ''"
     >
       <!-- 畫面內容區 -->
       <div class="relative flex-1 flex flex-col justify-center">
@@ -287,38 +312,164 @@
           </div>
         </section>
 
+        <!-- ===== 拖拉畫面  ===== -->
+        <section
+          x-show="screen === 'drag'"
+          class="relative w-full h-full bg-[url(./assets/active/blue_bg.png)]">
+          <div id="can_back" class="absolute -bottom-37 left-1/2 -translate-x-1/2 w-124 h-115.75">
+            <img src="./assets/active/can_back.png" class="w-full h-full"/>
+          </div>
+          <div
+            id="active"
+            class="absolute top-25 left-1/2 -translate-x-1/2 cursor-grab active:cursor-grabbing">
+            <img x-show="resultAnimal === 'bird'" src="./assets/active/bird.png" class="w-28.5 h-auto" />
+            <img x-show="resultAnimal === 'horse'" src="./assets/active/horse.png" class="w-28.5 h-auto -rotate-19" />
+            <img x-show="resultAnimal === 'fish'" src="./assets/active/fish.png" class="w-28.5 h-auto -rotate-19" />
+            <img x-show="resultAnimal === 'cat'" src="./assets/active/cat.png" class="w-28.5 h-auto -rotate-19" />
+            <img x-show="resultAnimal === 'rabbit'" src="./assets/active/rabbit.png" class="w-28.5 h-auto -rotate-19" />
+          </div>
+          <div id="can_front" class="absolute -bottom-37 left-1/2 -translate-x-1/2 w-124 h-115.75 z-10">
+            <img src="./assets/active/can_front.png" class="w-full h-full"/>
+          </div>
+          <div id="drag_hint" class="absolute bottom-18.75 left-0 flex items-center justify-center w-full h-10 bg-white/75 text-sm font-black z-10">
+            拖放物件至福罐中
+          </div>
+        </section>
+
+        <!-- 守護神旋轉 -->
+        <section
+          id="final"
+          x-show="screen === 'spin'"
+          class="relative flex items-center justify-center w-full h-full bg-[url(./assets/active/blue_bg.png)]">
+          <div id="final_dark_bg" class="absolute inset-0 bg-[url(./assets/final/dark_bg.png)] bg-cover bg-center opacity-0"></div>
+          <div id="spin_shadow" class="opacity-0 relative h-116 w-full">
+            <img src="./assets/final/horse_shadow.png" class="shadow-animal absolute right-18.5 top-0 h-27.5 w-auto -rotate-12" />
+            <img src="./assets/final/cat_shadow.png" class="shadow-animal absolute -right-6.5 top-44.5 h-27.5 w-auto rotate-28" />
+            <img src="./assets/final/fish_shadow.png" class="shadow-animal absolute bottom-2.5 right-14.5 h-27.5 w-auto rotate-12" />
+            <img src="./assets/final/bird_shadow.png" class="shadow-animal absolute left-4 bottom-16 h-27.5 w-auto -rotate-12" />
+            <img src="./assets/final/rabbit_shadow.png" class="shadow-animal absolute top-22 -left-6 h-27.5 w-auto -rotate-12" />
+          </div>
+
+          <div id="can_close" class="absolute -bottom-37 left-1/2 -translate-x-1/2 w-124 h-115.75">
+            <img src="./assets/final/can_close.png" class="w-full h-full"/>
+          </div>
+
+          <div id="final_flash" class="absolute opacity-0 inset-0 overflow-hidden z-20">
+            <!-- 射線 (7條，各有不同角度、寬高、透明度) -->
+            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 26px);width:52px;height:210px;background:white;border-radius:9999px;opacity:.88;transform-origin:50% 100%;"></div>
+            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 17px);width:34px;height:265px;background:white;border-radius:9999px;opacity:.90;transform-origin:50% 100%;"></div>
+            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 30px);width:60px;height:190px;background:white;border-radius:9999px;opacity:.85;transform-origin:50% 100%;"></div>
+            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 20px);width:40px;height:245px;background:white;border-radius:9999px;opacity:.87;transform-origin:50% 100%;"></div>
+            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 27px);width:54px;height:205px;background:white;border-radius:9999px;opacity:.85;transform-origin:50% 100%;"></div>
+            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 15px);width:30px;height:280px;background:white;border-radius:9999px;opacity:.90;transform-origin:50% 100%;"></div>
+            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 23px);width:46px;height:220px;background:white;border-radius:9999px;opacity:.88;transform-origin:50% 100%;"></div>
+            <!-- 外圓 50% 透明，直徑比內圓大 126px -->
+            <div id="flash_outer" style="position:absolute;top:50%;left:50%;width:1026px;height:1026px;margin:-513px 0 0 -513px;border-radius:50%;background:rgba(255,255,255,.50);"></div>
+            <!-- 內圓 完全不透明，擴大至蓋滿畫面 -->
+            <div id="flash_inner" style="position:absolute;top:50%;left:50%;width:900px;height:900px;margin:-450px 0 0 -450px;border-radius:50%;background:#fff;"></div>
+          </div>
+        </section>
+
         <!-- ===== 結果畫面 ===== -->
         <section
           x-show="screen === 'result'"
-          x-transition:enter="transition ease-out duration-700"
-          x-transition:enter-start="opacity-0 scale-95"
-          x-transition:enter-end="opacity-100 scale-100"
-          class="text-center"
+          class="w-full bg-white relative"
         >
-          <template x-if="screen === 'result'">
-            <div>
-              <p class="text-xs tracking-[0.3em] text-[#9a978f] mb-4">YOUR RESULT</p>
-              <div class="mb-8 animate-float-slow">
-                <div class="mx-auto grid place-items-center w-40 h-40 rounded-full border border-muji-line"
-                     :style="`background-color:${results[resultIndex].color}`">
-                  <span class="text-5xl" x-text="results[resultIndex].emoji"></span>
+          <div id="result" class="w-full bg-[url(./assets/bg.png)] bg-cover bg-center relative">
+            <!-- Content -->
+            <template x-for="item in results" :key="item.animal">
+              <div x-show="item.animal === resultAnimal" class="relative flex flex-col items-center gap-5 px-7.5 pt-7.25 pb-8.75">
+                <!-- Photo Area -->
+                <div class="w-82.5 h-156.5 overflow-hidden">
+                  <img :src="item.shareImage" :alt="item.title" class="w-full h-full object-cover" />
+                </div>
+
+                <!-- Under Section -->
+                <div class="flex flex-col items-center gap-10 w-82.5">
+
+                  <!-- Share Buttons -->
+                  <div class="flex flex-col gap-5 w-full">
+                    <p class="text-center text-xs tracking-[1.2px] leading-[2.08] text-black">
+                      長按上方結果圖，即可儲存圖片
+                    </p>
+                    <div class="flex justify-between gap-6.25 h-10 w-full">
+                      <button class="flex-1 flex items-center justify-center bg-black rounded-md">
+                        <img src="./assets/animal/share_test.svg" class="w-auto h-[19.42px]"/>
+                      </button>
+                      <button @click="restart()" class="flex-1 flex items-center justify-center bg-black rounded-md">
+                        <img src="./assets/animal/play_again.svg" class="w-auto h-[19.42px]"/>
+                      </button>
+                    </div>
+                    <hr class="border-black/50" />
+                  </div>
+
+                  <!-- Item Info -->
+                  <div class="flex flex-col gap-5 w-full">
+
+                    <!-- Title Block -->
+                    <div class="flex flex-col items-center gap-1.25 w-full">
+                      <p class="w-full text-center text-base tracking-[1.6px] text-black font-noto-sans-tc">
+                        \<span x-text="item.subtitle"></span>/
+                      </p>
+                      <h1 class="w-full text-center text-2xl font-black tracking-[2.4px] text-black font-noto-sans-tc" x-text="item.title"></h1>
+                    </div>
+
+                    <!-- Product Image -->
+                    <div class="w-full overflow-hidden">
+                      <img :src="item.productImage" :alt="item.title" class="w-full h-auto object-cover" />
+                    </div>
+
+                    <!-- Description Row -->
+                    <div class="flex items-center gap-2.5 h-15 w-full">
+                      <!-- Badge -->
+                      <div class="flex items-center justify-center w-15 h-15 rounded-full border border-black shrink-0">
+                        <span class="text-sm font-medium tracking-[1.4px] text-center text-black font-noto-sans-tc leading-tight">
+                          台灣<br/>企劃
+                        </span>
+                      </div>
+                      <!-- Text Column -->
+                      <div class="flex flex-col justify-center gap-5 flex-1 h-full">
+                        <p class="text-sm font-medium tracking-[1.4px] text-black font-noto-sans-tc leading-[1.07]">
+                          <span x-text="item.subtitle"></span>。
+                        </p>
+                        <p class="text-lg font-medium tracking-[1.8px] text-black font-noto-sans-tc leading-[0.83]" x-text="item.title"></p>
+                      </div>
+                    </div>
+
+                    <!-- Checklist -->
+                    <ul class="flex flex-col gap-2.5 w-full h-27.5">
+                      <template x-for="(list, index) in item.list" :key="index">
+                        <li class="flex items-center gap-2.5 h-5 w-full">
+                          <!-- Checkmark Circle -->
+                          <img src="./assets/animal/circle-check.svg" class="w-5 h-5" />
+                          <span class="text-xs font-medium tracking-[1.2px] text-black font-noto-sans-tc leading-[1.25]" x-text="list"></span>
+                        </li>
+                      </template>
+                    </ul>
+                  </div>
+
+                  <div class="w-full">
+                    <p class="text-center font-bold">也歡迎至門市找體驗服務顧問諮詢喔</p>
+                    <div class="flex mt-5">
+                      <img :src="item.serialsImage" alt="store" class="w-22.5 h-15 object-cover">
+                      <a :href="item.serialsLink" class="cursor-pointer flex flex-1 items-center justify-between pr-5 bg-white">
+                        <p x-text="item.serials" class="flex-1 font-medium text-[10px] text-center"></p>
+                        <img src="./assets/animal/arrow_right.svg" class="w-[5px] h-2.5"/>
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <h2 class="text-2xl font-medium text-muji-ink mb-2" x-text="results[resultIndex].title"></h2>
-              <p class="text-sm tracking-widest text-[#9a978f] mb-6" x-text="results[resultIndex].subtitle"></p>
-              <p class="text-sm text-[#6f6c64] leading-loose mb-10 text-left bg-white/60 rounded-2xl border border-muji-line p-5"
-                 x-text="results[resultIndex].desc"></p>
-              <button class="btn-primary mb-3" @click="restart()">重新測驗</button>
-            </div>
-          </template>
+            </template>
+          </div>
         </section>
 
       </div>
 
       <!-- Footer -->
-      <footer class="flex-none flex justify-between items-center py-2.5 px-7.5">
+      <footer class="flex-none flex justify-between items-center py-2.5 px-7.5 z-30 bg-white">
         <img src="./assets/logo.svg" alt="logo" class="w-auto h-3">
-        <p class="leaing-2.5 text-[#787878] text-[0.375rem] text-right">Copyright©Ryohin Keikaku Co., Ltd. ©MUJI (Taiwan) Co., Ltd.<br/>
+        <p class="leading-2.5 text-[#787878] text-[0.375rem] text-right">Copyright©Ryohin Keikaku Co., Ltd. ©MUJI (Taiwan) Co., Ltd.<br/>
         All rights reserved.擁有及保留本網站所有權利。</p>
       </footer>
     </main>
@@ -328,7 +479,7 @@
         return {
           screen: 'start',
           answers: [null, null, null],
-          resultIndex: 0,
+          resultAnimal: '',
 
           questions: [
             // Q1 — 4 個選項
@@ -338,43 +489,90 @@
             // Q3 — 5 個選項
             ['加強保濕鎖水', '控油與平衡', '緊緻與抗齡', '舒緩與鎮定', '提亮與淨白'],
           ],
-
           results: [
-            {
-              title: '保濕鎖水型',
-              subtitle: 'HYDRATING',
-              emoji: '💧',
-              color: '#dce8ee',
-              desc: '你的肌膚渴望水分，建議以溫和保濕為核心，疊加化妝水與乳液，幫助肌膚維持飽水與柔嫩，重建健康的水脂膜。',
+            { 
+              'animal': 'horse',
+              'title': '清新臉部保養系列',
+              'subtitle': '溫和調理毛孔，平衡肌膚狀態',
+              'list': [
+                '容易出油的肌膚',
+                '想維持皮脂平衡',
+                '在意粉刺毛孔問題',
+                '想調整粗糙皮膚'
+              ],
+              'serials': '清新臉部保養系列特集',
+              'serialsLink': 'https://www.muji.tw/tw/feature/25ss/clearcare/',
+              'shareImage': './assets/animal/horse/share.png',
+              'productImage': './assets/animal/horse/product.png',
+              'serialsImage': './assets/animal/horse/product.png',
+              'activeImage': './assets/active/horse.png'
             },
             {
-              title: '控油平衡型',
-              subtitle: 'BALANCING',
-              emoji: '🍃',
-              color: '#dde9dc',
-              desc: '你的肌膚較易出油，重點在於清潔與水油平衡。選擇清爽不黏膩的保養，避免過度去油，讓肌膚回到舒適的平衡狀態。',
+              'animal': 'bird',
+              'title': '高濃度美容液系列',
+              'subtitle': '溫和結合成分特性，提升護膚效能',
+              'list': [
+                '增強肌膚防禦力',
+                '在意瑕疵想要改善膚質',
+                '想要肌膚嫩白、改善暗沉',
+                '想要調理角質，緊緻毛孔'
+              ],
+              'serials': '臉部保養系列',
+              'serialsLink': 'https://www.muji.tw/tw/feature/25aw/skincare/?utm_source=mujitw&utm_medium=muji-feature&utm_term=skincare',
+              'shareImage': './assets/animal/bird/share.png',
+              'productImage': './assets/animal/bird/product.png',
+              'serialsImage': './assets/animal/bird/serial.jpeg',
+              'activeImage': './assets/active/bird.png'
+            },
+            { 
+              'animal': 'fish',
+              'title': '水漾潤澤臉部保養系列',
+              'subtitle': '賦予乾燥、適齡肌膚彈性與潤澤',
+              'list': [
+                '肌膚容易乾燥',
+                '想維持光滑緊緻',
+                '在意失去彈性的肌膚'
+              ],
+              'serials': '水漾潤澤臉部保養系列特集',
+              'serialsLink': 'https://www.muji.tw/tw/feature/25aw/lustreglass/?utm_source=mujitw&utm_medium=muji-feature&utm_term=25aw-lustreglass ',
+              'shareImage': './assets/animal/fish/share.png',
+              'productImage': './assets/animal/fish/product.png',
+              'serialsImage': './assets/animal/fish/product.png',
+              'activeImage': './assets/active/fish.png'
             },
             {
-              title: '緊緻抗齡型',
-              subtitle: 'FIRMING',
-              emoji: '🌸',
-              color: '#f0e0e6',
-              desc: '你的肌膚需要彈力與緊緻照護。可加入精華與按摩，搭配充足保濕，喚醒肌膚的飽滿與光澤，留住年輕的輪廓。',
+              'animal': 'cat',
+              'title': '米糠發酵臉部保養系列',
+              'subtitle': '溫和滲透肌膚，打造彈性光澤肌',
+              'list': [
+                '在意肌膚暗沉',
+                '想維持肌膚緊緻',
+                '想要水潤光澤',
+                '喜歡質地輕盈'
+              ],
+              'serials': '米糠發酵臉部保養系列特集',
+              'serialsLink': 'https://www.muji.tw/tw/feature/24ss/ricebran/?utm_source=mujitw&utm_medium=muji-feature&utm_term=ricebran',
+              'shareImage': './assets/animal/cat/share.png',
+              'productImage': './assets/animal/cat/product.png',
+              'serialsImage': './assets/animal/cat/product.png',
+              'activeImage': './assets/active/cat.png'
             },
             {
-              title: '舒緩鎮定型',
-              subtitle: 'SOOTHING',
-              emoji: '🌿',
-              color: '#e3ebd9',
-              desc: '你的肌膚較為敏感，需要溫和與鎮定。挑選成分單純、無多餘負擔的保養，減少刺激，讓肌膚在安心中慢慢變強壯。',
-            },
-            {
-              title: '提亮淨白型',
-              subtitle: 'BRIGHTENING',
-              emoji: '✨',
-              color: '#f1ead6',
-              desc: '你的肌膚追求透亮與均勻，建議做好防曬並適度提亮保養，由內而外點亮膚色，找回自然清透的好氣色。',
-            },
+              'animal': 'rabbit',
+              'title': '敏感肌臉部保養系列',
+              'subtitle': '低刺激性，專為敏感肌打造',
+              'list': [
+                '在意肌膚乾燥',
+                '容易在季節交替時感到不適',
+                '容易感到刺激'
+              ],
+              'serials': '敏感肌臉部保養系列特集',
+              'serialsLink': 'https://www.muji.tw/tw/feature/25ss/sensitiveskin/?utm_source=mujitw&utm_medium=muji-feature&utm_term=sensitiveskin',
+              'shareImage': './assets/animal/rabbit/share.png',
+              'productImage': './assets/animal/rabbit/product.png',
+              'serialsImage': './assets/animal/rabbit/product.png',
+              'activeImage': './assets/active/rabbit.png'
+            }
           ],
 
           // 進度：在問答階段顯示
@@ -383,6 +581,25 @@
           },
           get currentQuestion() {
             return { q1: 1, q2: 2, q3: 3 }[this.screen] || 0;
+          },
+
+          init() {
+            anime.createDraggable('#active', {                                                                      
+              x: false,                                                                                             
+              y: {                                                                                                  
+                modifier: val => Math.max(0, val),                                                                  
+              },   
+              onRelease: (draggable) => {
+                draggable.stop()
+                anime.animate('#drag_hint', { opacity: 0, duration: 1000, ease: 'easeInExpo' })
+                anime.animate('#active', {
+                  translateY: 300,
+                  duration: 1000,
+                  ease: 'easeInExpo',
+                  onComplete: () => this.dragTransitionAnimation()
+                })
+              },                                                                                                   
+            })
           },
 
           go(target) {
@@ -395,14 +612,116 @@
           finish(optIndex) {
             this.answers[2] = optIndex;
             // 第三題（5 個選項）對應 5 種結果
-            this.resultIndex = optIndex;
-            this.screen = 'result';
+            this.resultAnimal = this.results[optIndex]['animal'];
+            this.screen = 'drag';
           },
           restart() {
-            this.answers = [null, null, null];
-            this.resultIndex = 0;
-            this.screen = 'start';
+            location.reload();
           },
+
+          // 拖進罐頭後轉場度動畫
+          dragTransitionAnimation() {
+            this.screen = 'spin'
+            Alpine.nextTick(() => {
+              requestAnimationFrame(() => {
+                const can = document.getElementById('can_close')
+                const section = can.parentElement
+                const sectionRect = section.getBoundingClientRect()
+                const canRect = can.getBoundingClientRect()
+
+                const targetW = 75.5 * 4   // 302px
+                const targetH = 70.25 * 4  // 281px
+
+                const currentCX = canRect.left - sectionRect.left + canRect.width / 2
+                const currentCY = canRect.top - sectionRect.top + canRect.height / 2
+                const targetCX = sectionRect.width / 2
+                const targetCY = sectionRect.height / 2
+                
+                anime.animate('#final_dark_bg', { opacity: 1, duration: 1500, ease: 'easeOutExpo' }) 
+                anime.animate('#can_close', {
+                  translateX: targetCX - currentCX,
+                  translateY: targetCY - currentCY - targetH / 4,
+                  width: targetW,
+                  height: targetH,
+                  duration: 1500,
+                  ease: 'easeOutExpo',
+                  onComplete: () => {
+                    this.spinAnimation()
+                  }
+                })
+              })
+            })
+          },
+
+          // 罐頭旋轉接白畫面轉場
+          spinAnimation() {
+            anime.animate('#spin_shadow', {
+              opacity: 1,
+              duration: 1000,
+              ease: 'easeInExpo',
+              onComplete: () => {
+                setTimeout(() => {
+                  anime.animate('#final_dark_bg', { 
+                    opacity: 1,
+                    duration: 500,
+                    ease: 'easeOutExpo',
+                    onComplete: () => {
+                      this.flashAnimation()
+                    }
+                  })
+                }, 100)
+              }
+            })
+            anime.animate('#spin_shadow', {
+              scale: 1.5,
+              rotate: '0.5turn',
+              duration: 2500,
+              ease: 'easeInExpo',
+            })
+          },
+          
+          // 閃光白畫面轉場
+          flashAnimation() {
+            const rayAngles = [15, 60, 100, 150, 200, 255, 305]
+            document.querySelectorAll('.flash-ray').forEach((ray, i) => {
+              anime.set(ray, { rotate: rayAngles[i], scaleY: 0 })
+            })
+            anime.set('#flash_outer', { scale: 0 })
+            anime.set('#flash_inner', { scale: 0 })
+
+            // 先讓 #final_flash 從 opacity-0 變可見
+            anime.animate('#final_flash', {
+              opacity: 1,
+              duration: 150,
+              ease: 'linear',
+              onComplete: () => {
+                // 射線射出
+                anime.animate('.flash-ray', {
+                  scaleY: 3,
+                  duration: 280,
+                  ease: 'easeOutExpo',
+                  delay: anime.stagger(20),
+                })
+                // 外圓（50% 透明）擴散
+                anime.animate('#flash_outer', {
+                  scale: 1,
+                  duration: 700,
+                  ease: 'easeOutExpo',
+                  delay: 80,
+                })
+                // 內圓（全白）擴散蓋滿畫面
+                anime.animate('#flash_inner', {
+                  scale: 1,
+                  duration: 800,
+                  ease: 'easeOutQuart',
+                  delay: 200,
+                  onComplete: () => {
+                    this.screen = 'result'
+                  }
+                })
+              }
+            })
+          }
         };
       }
     </script>
