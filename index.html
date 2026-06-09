@@ -32,12 +32,12 @@
       }
 
       :root {
-        font-size: calc(100vw / 24.375); /* 390px 以下：等比縮放 */
+        font-size: calc(100vw / 24.375); /* 全域等比縮放，390px 時 = 16px */
       }
 
-      @media (min-width: 390px) {
+      @media (min-width: 640px) {
         :root {
-          font-size: 16px; /* 390px 以上：固定 1rem = 16px */
+          font-size: 16px; /* 768px 以上：固定 1rem = 16px */
         }
       }
 
@@ -205,12 +205,11 @@
     <main
       x-data="quiz()"
       x-cloak
-      class="relative max-w-97.5 max-h-[690px] h-screen w-full pb-10 mx-auto my-auto bg-muji-white shadow-[0_0_60px_rgba(0,0,0,0.08)] overflow-hidden"
-      :class="screen === 'result' ? '!max-h-172.5' : ''"
+      class="relative sm:max-w-97.5 sm:max-h-172.5 h-full w-full pb-10 mx-auto my-auto bg-muji-white shadow-[0_0_60px_rgba(0,0,0,0.08)] overflow-hidden"
     >
       <!-- 畫面內容區 -->
-      <div class="relative mx-auto bg-white"
-        :class="screen !== 'result' ? 'sm:max-h-172.5 h-full overflow-hidden sm:overflow-y-auto' : 'max-h-screen h-screen overflow-x-hidden overflow-y-auto' ">
+      <div class="relative h-full mx-auto bg-white overflow-x-hidden overflow-y-auto"
+        :class="screen !== 'result' ? '!overflow-y-hidden' : 'max-h-screen sm:max-h-162.5 overflow-x-hidden overflow-y-auto' ">
 
         <!-- ===== 開始畫面 ===== -->
         <section
@@ -380,7 +379,7 @@
         <!-- ===== 拖拉畫面  ===== -->
         <section
           x-show="screen === 'drag'"
-          class="relative w-full h-full bg-[url(./assets/active/blue_bg.png)]">
+          class="relative w-full h-full bg-[url(./assets/active/blue_bg.jpg)]">
           <div id="can_back" class="absolute -bottom-37 left-1/2 -translate-x-1/2 w-124 h-115.75">
             <img src="./assets/active/can_back.png" class="w-full h-full"/>
           </div>
@@ -396,7 +395,12 @@
           <div id="can_front" class="absolute -bottom-37 left-1/2 -translate-x-1/2 w-124 h-115.75 z-10">
             <img src="./assets/active/can_front.png" class="w-full h-full"/>
           </div>
-          <div id="drag_hint" class="absolute bottom-18.75 left-0 flex items-center justify-center w-full h-10 bg-white/75 text-sm font-black z-10">
+          <div id="drag_hint"
+            x-show="screen === 'drag'"
+            x-transition:enter="transition-opacity duration-700 delay-[3000ms]"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            class="absolute bottom-18.75 left-0 flex items-center justify-center w-full h-10 bg-white/75 text-sm font-black z-10">
             拖放物件至福罐中
           </div>
         </section>
@@ -405,7 +409,7 @@
         <section
           id="final"
           x-show="screen === 'spin'"
-          class="relative flex items-center justify-center w-full h-full bg-[url(./assets/active/blue_bg.png)]">
+          class="relative flex items-center justify-center w-full h-full bg-[url(./assets/active/blue_bg.jpg)]">
           <div id="final_dark_bg" class="absolute inset-0 bg-[url(./assets/final/dark_bg.png)] bg-cover bg-center opacity-0"></div>
           <div id="spin_shadow" class="opacity-0 relative h-116 w-full">
             <img src="./assets/final/horse_shadow.png" class="shadow-animal absolute right-18.5 top-0 h-27.5 w-auto -rotate-12" />
@@ -554,10 +558,10 @@
     <script>
       function quiz() {
         return {
-          screen: 'start',
+          screen: 'q3',
           flash: false,
           answers: [null, null, null],
-          resultAnimal: '',
+          resultAnimal: 'bird',
 
           questions: [
             // Q1 — 4 個選項
@@ -669,13 +673,26 @@
               },   
               onRelease: (draggable) => {
                 draggable.stop()
-                anime.animate('#drag_hint', { opacity: 0, duration: 1000, ease: 'easeInExpo' })
-                anime.animate('#active', {
-                  translateY: 300,
-                  duration: 1000,
-                  ease: 'easeInExpo',
-                  onComplete: () => this.dragTransitionAnimation()
-                })
+                // 取得當前 瀏覽器 height
+                let viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+                if(viewportHeight > 690 && window.innerWidth >= 640) {
+                  viewportHeight = 690; // 限制最大高度為 690px
+                }
+                const ratio = 190 / 690;
+                const threshold = viewportHeight * ratio; // 計算閾值
+                
+                if (draggable.y > threshold) {
+                  const translateRatio = 300 / 690
+                  const translateY = viewportHeight * translateRatio
+                  draggable.stop()
+                  anime.animate('#drag_hint', { opacity: 0, duration: 1000, ease: 'easeInExpo' })
+                  anime.animate('#active', {
+                    translateY: translateY,
+                    duration: 1000,
+                    ease: 'easeInExpo',
+                    onComplete: () => this.dragTransitionAnimation()
+                  })
+                }
               },                                                                                                   
             })
           },
