@@ -215,26 +215,28 @@
           <!-- 上方跑馬燈：向右滑動 -->
           <div class="marquee absolute top-0 left-0">
             <div class="marquee-track animate-marquee-right">
-              <img src="./assets/1_Animal Item.png" alt="">
-              <img src="./assets/1_Animal Item.png" alt="">
+              <picture>
+                <source media="(min-width: 768px)" srcset="./assets/1_Animal Item_D.png">
+                <img src="./assets/1_Animal Item.png" alt="">
+              </picture>
+              <picture>
+                <source media="(min-width: 768px)" srcset="./assets/1_Animal Item_D.png">
+                <img src="./assets/1_Animal Item.png" alt="">
+              </picture>
             </div>
           </div>
 
           <!-- 中央：底圖 + 直書文字 + 按鈕（按鈕疊在圖片上） -->
           <div class="relative inline-block">
             <img src="./assets/1_Can Shape.png" alt="美肌守護神" class="w-[314px] h-[414px]">
-            <div class="absolute inset-0 flex items-center justify-center pb-16">
-              <div class="relative">
-                <!-- 左側、向上對齊 -->
-                <img src="./assets/1_Star.png" alt="" class="absolute top-0 -left-7 w-[18px] h-[18px] animate-twinkle">
-                <!-- 右側、向下對齊 -->
-                <img src="./assets/1_Star.png" alt="" class="absolute bottom-0 -right-7 w-[15px] h-[15px] animate-twinkle [animation-delay:0.9s]">
-                <h1 class="vertical-text text-white text-[44px] font-black leading-[50px] tracking-[0.1em]
-                           drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]">
-                  美肌守護神
-                </h1>
-              </div>
-            </div>
+            <!-- 直書標題：相對罐子圖片絕對置中 -->
+            <h1 class="vertical-text absolute top-[54px] left-1/2 -translate-x-1/2 text-white text-[44px] font-black leading-[50px] tracking-[0.1em]
+                       drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]">
+              美肌守護神
+            </h1>
+            <!-- 星星：相對罐子圖片定位（左上 / 右下） -->
+            <img src="./assets/1_Star.png" alt="" class="absolute top-[54px] left-[104px] w-[18px] h-[18px] animate-twinkle">
+            <img src="./assets/1_Star.png" alt="" class="absolute bottom-[118px] right-[104px] w-[15px] h-[15px] animate-twinkle [animation-delay:0.9s]">
             <div class="absolute left-1/2 -translate-x-1/2 bottom-8 z-10">
               <button
                 class="btn-primary !w-[140px] h-[50px] !py-0 !rounded-[10px] overflow-hidden animate-pulse-scale
@@ -254,8 +256,14 @@
           <!-- 下方跑馬燈：向左滑動 -->
           <div class="marquee absolute bottom-0 left-0">
             <div class="marquee-track animate-marquee-left">
-              <img src="./assets/1_Animal Item.png" alt="">
-              <img src="./assets/1_Animal Item.png" alt="">
+              <picture>
+                <source media="(min-width: 768px)" srcset="./assets/1_Animal Item_D.png">
+                <img src="./assets/1_Animal Item.png" alt="">
+              </picture>
+              <picture>
+                <source media="(min-width: 768px)" srcset="./assets/1_Animal Item_D.png">
+                <img src="./assets/1_Animal Item.png" alt="">
+              </picture>
             </div>
           </div>
         </section>
