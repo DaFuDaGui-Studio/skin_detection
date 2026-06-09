@@ -201,7 +201,7 @@
     </style>
   </head>
 
-  <body class="flex items-center justify-center h-screen w-screen">
+  <body class="flex items-center justify-center h-[100dvh] w-screen">
     <main
       x-data="quiz()"
       x-cloak
@@ -209,7 +209,7 @@
     >
       <!-- 畫面內容區 -->
       <div class="relative h-full mx-auto bg-white overflow-x-hidden overflow-y-auto"
-        :class="screen !== 'result' ? '!overflow-y-hidden' : 'max-h-screen sm:max-h-162.5 overflow-x-hidden overflow-y-auto' ">
+        :class="screen !== 'result' ? '!overflow-y-hidden' : 'max-h-[100dvh] sm:max-h-162.5 overflow-x-hidden overflow-y-auto' ">
 
         <!-- ===== 開始畫面 ===== -->
         <section
@@ -470,10 +470,10 @@
                       長按上方結果圖，即可儲存圖片
                     </p>
                     <div class="flex justify-between gap-6.25 h-10 w-full">
-                      <button class="flex-1 flex items-center justify-center bg-black rounded-md">
+                      <button @click="webshare()" class="cursor-pointer flex-1 flex items-center justify-center bg-black rounded-md">
                         <img src="./assets/animal/share_test.svg" class="w-auto h-[1.21375rem]"/>
                       </button>
-                      <button @click="restart()" class="flex-1 flex items-center justify-center bg-black rounded-md">
+                      <button @click="restart()" class="cursor-pointer flex-1 flex items-center justify-center bg-black rounded-md">
                         <img src="./assets/animal/play_again.svg" class="w-auto h-[1.21375rem]"/>
                       </button>
                     </div>
@@ -581,6 +581,7 @@
           ],
           results: [
             { 
+              'name': '出雲駿馬',
               'animal': 'horse',
               'title': '清新臉部保養系列',
               'subtitle': '溫和調理毛孔，平衡肌膚狀態',
@@ -597,7 +598,8 @@
               'serialsImage': './assets/animal/horse/product.png',
               'activeImage': './assets/active/horse.png'
             },
-            {
+            { 
+              'name': '丹頂仙鶴',
               'animal': 'bird',
               'title': '高濃度美容液系列',
               'subtitle': '溫和結合成分特性，提升護膚效能',
@@ -615,6 +617,7 @@
               'activeImage': './assets/active/bird.png'
             },
             { 
+              'name': '吉兆錦鯉',
               'animal': 'fish',
               'title': '水漾潤澤臉部保養系列',
               'subtitle': '賦予乾燥、適齡肌膚彈性與潤澤',
@@ -631,6 +634,7 @@
               'activeImage': './assets/active/fish.png'
             },
             {
+              'name': '朝霞福貓',
               'animal': 'cat',
               'title': '米糠發酵臉部保養系列',
               'subtitle': '溫和滲透肌膚，打造彈性光澤肌',
@@ -648,6 +652,7 @@
               'activeImage': './assets/active/cat.png'
             },
             {
+              'name': '風間白兔',
               'animal': 'rabbit',
               'title': '敏感肌臉部保養系列',
               'subtitle': '低刺激性，專為敏感肌打造',
@@ -729,8 +734,26 @@
           restart() {
             location.reload();
           },
+          async webshare() {
+            if (!navigator.share) { alert('您的瀏覽器不支援 Web Share API'); return; }
+            try {
+              const assetPath = this.results.find(item => item.animal === this.resultAnimal)?.shareImage
+              const animalName = this.results.find(item => item.animal === this.resultAnimal)?.name
+              const res = await fetch(assetPath);
+              const blob = await res.blob();
+              const file = new File([blob], 'muji-share.png', { type: blob.type });
+              const shareData = {
+                title: `我的美肌守護神是「${animalName}」！`,
+                text: '快來測測你的守護神',
+                url: window.location.href
+              }
+              const sharePayload = { ...shareData, url: window.location.href };
+              if (navigator.canShare && navigator.canShare({ files: [file] })) sharePayload.files = [file];
+              await navigator.share(sharePayload);
+            } catch(e) { console.log('分享失敗', e); }
+          },
 
-          // 拖進罐頭後轉場度動畫
+          // 7. active - 拖進罐頭後轉場度動畫
           dragTransitionAnimation() {
             this.screen = 'spin'
             Alpine.nextTick(() => {
@@ -764,7 +787,7 @@
             })
           },
 
-          // 罐頭旋轉接白畫面轉場
+          // 8. final - 罐頭旋轉接白畫面轉場
           spinAnimation() {
             anime.animate('#spin_shadow', {
               opacity: 1,
@@ -791,7 +814,7 @@
             })
           },
           
-          // 閃光白畫面轉場
+          // 9. animal - 閃光白畫面轉場
           flashAnimation() {
             const rayAngles = [15, 60, 100, 150, 200, 255, 305]
             document.querySelectorAll('.flash-ray').forEach((ray, i) => {
