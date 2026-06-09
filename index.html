@@ -31,6 +31,16 @@
         --color-muji-red: #7F0019;
       }
 
+      :root {
+        font-size: calc(100vw / 24.375); /* 全域等比縮放，390px 時 = 16px */
+      }
+
+      @media (min-width: 640px) {
+        :root {
+          font-size: 16px; /* 768px 以上：固定 1rem = 16px */
+        }
+      }
+
       @layer base {
         html {
           font-size: 16px;
@@ -83,13 +93,13 @@
       /* 浮動動畫 */
       @keyframes float {
         0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
+        50% { transform: translateY(-0.625rem); }
       }
       .animate-float { animation: float 4s ease-in-out infinite; }
 
       @keyframes float-slow {
         0%, 100% { transform: translateY(0) scale(1); }
-        50% { transform: translateY(-16px) scale(1.04); }
+        50% { transform: translateY(-1rem) scale(1.04); }
       }
       .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
 
@@ -101,7 +111,7 @@
         @apply flex w-max;
       }
       .marquee-track img {
-        @apply flex-none h-[106px] w-auto max-w-none;
+        @apply flex-none h-[6.625rem] w-auto max-w-none;
       }
       @keyframes marquee-left {
         from { transform: translateX(0); }
@@ -136,11 +146,11 @@
 
       /* 雲霧向內飄至定點 */
       @keyframes drift-in-left {
-        from { transform: translateX(-60px); opacity: 0; }
-        to   { transform: translateX(0);     opacity: 1; }
+        from { transform: translateX(-3.75rem); opacity: 0; }
+        to   { transform: translateX(0);        opacity: 1; }
       }
       @keyframes drift-in-right {
-        from { transform: translateX(60px); opacity: 0; }
+        from { transform: translateX(3.75rem); opacity: 0; }
         to   { transform: translateX(0);    opacity: 1; }
       }
       .animate-drift-in-left {
@@ -170,12 +180,12 @@
 
       /* result 全白畫面轉場 */
       @keyframes circle-reveal {
-        from { clip-path: circle(0px at 50% 171px); }
-        to   { clip-path: circle(150% at 50% 171px); }
+        from { clip-path: circle(0 at 50% 10.6875rem); }
+        to   { clip-path: circle(150% at 50% 10.6875rem); }
       }
 
       #result {
-        clip-path: circle(0px at 50% 171px);
+        clip-path: circle(0 at 50% 10.6875rem);
         animation: circle-reveal 1.5s ease-out 0.5s forwards;
       }
 
@@ -191,15 +201,15 @@
     </style>
   </head>
 
-  <body>
+  <body class="flex items-center justify-center h-screen w-screen">
     <main
       x-data="quiz()"
       x-cloak
-      class="relative mx-auto w-full max-w-[390px] min-h-screen md:min-h-0 md:h-[690px] flex flex-col bg-muji-white shadow-[0_0_60px_rgba(0,0,0,0.08)] overflow-hidden"
-      :class="screen === 'result' ? '!md:h-auto !overflow-y-auto' : ''"
+      class="relative sm:max-w-97.5 sm:max-h-172.5 h-full w-full pb-10 mx-auto my-auto bg-muji-white shadow-[0_0_60px_rgba(0,0,0,0.08)] overflow-hidden"
     >
       <!-- 畫面內容區 -->
-      <div class="relative flex-1 flex flex-col justify-center">
+      <div class="relative h-full mx-auto bg-white overflow-x-hidden overflow-y-auto"
+        :class="screen !== 'result' ? '!overflow-y-hidden' : 'max-h-screen sm:max-h-162.5 overflow-x-hidden overflow-y-auto' ">
 
         <!-- ===== 開始畫面 ===== -->
         <section
@@ -239,15 +249,15 @@
             <img src="./assets/1_Star.png" alt="" class="absolute bottom-[118px] right-[104px] w-[15px] h-[15px] animate-twinkle [animation-delay:0.9s]">
             <div class="absolute left-1/2 -translate-x-1/2 bottom-8 z-10">
               <button
-                class="btn-primary !w-[140px] h-[50px] !py-0 !rounded-[10px] overflow-hidden animate-pulse-scale
-                       !text-muji-red font-black !text-[20px] leading-[30px] !tracking-[0.1em] !bg-white"
+                class="btn-primary !w-[8.75rem] h-[3.125rem] !py-0 !rounded-[0.625rem] overflow-hidden animate-pulse-scale
+                       !text-muji-red font-black !text-[1.25rem] leading-[1.875rem] !tracking-[0.1em] !bg-white"
                 @click="goIntro()"
               >
                 <!-- 底色材質（30% 透明度，疊在白色上） -->
                 <span class="absolute inset-0 bg-[url('./assets/Background_Texture.jpg')] bg-cover bg-center opacity-30 pointer-events-none"></span>
                 <span class="relative inline-flex items-center">
                   開始祈願
-                  <img src="./assets/1_Arrow 1.png" alt="" class="block self-center ml-[10px] w-[10px]">
+                  <img src="./assets/1_Arrow 1.png" alt="" class="block self-center ml-[0.625rem] w-[0.625rem]">
                 </span>
               </button>
             </div>
@@ -277,35 +287,35 @@
           <div class="absolute inset-0 bg-[url('./assets/Background_Texture.jpg')] bg-cover bg-center opacity-30 pointer-events-none"></div>
 
           <!-- 橋背景 -->
-          <img src="./assets/2_Bridge-BG.png" alt="" class="absolute left-1/2 top-1/2 w-[200%] max-w-none pointer-events-none animate-fade-in [animation-delay:0.7s] [transform:translate(-50%,calc(-50%+30px))]">
+          <img src="./assets/2_Bridge-BG.png" alt="" class="absolute left-1/2 top-1/2 w-[200%] max-w-none pointer-events-none animate-fade-in [animation-delay:0.7s] [transform:translate(-50%,calc(-50%+1.875rem))]">
 
           <!-- 白色覆蓋層（FFFFFF 75%） -->
           <div class="absolute inset-0 bg-white/75 pointer-events-none"></div>
 
           <!-- 橋（對齊 section 底部） -->
-          <img src="./assets/2_Bridge.png" alt="" class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[390px] h-[360px] pointer-events-none animate-fade-in [animation-delay:0.7s]">
+          <img src="./assets/2_Bridge.png" alt="" class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[24.375rem] h-[22.5rem] pointer-events-none animate-fade-in [animation-delay:0.7s]">
 
           <!-- 底部白色線性漸層（下白 100% → 上白 0%） -->
-          <div class="absolute bottom-0 left-0 right-0 h-[180px] bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+          <div class="absolute bottom-0 left-0 right-0 h-[11.25rem] bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
 
           <!-- 雲朵裝飾 -->
-          <img src="./assets/2_Cloud_l.png" alt="" class="absolute left-0 top-[122px] h-[81px] w-auto pointer-events-none animate-drift-in-left [animation-delay:2.7s]">
-          <img src="./assets/2_Cloud_r.png" alt="" class="absolute right-0 top-[43px] h-[91px] w-auto pointer-events-none animate-drift-in-right [animation-delay:2.7s]">
+          <img src="./assets/2_Cloud_l.png" alt="" class="absolute left-0 top-[7.625rem] h-[5.0625rem] w-auto pointer-events-none animate-drift-in-left [animation-delay:2.7s]">
+          <img src="./assets/2_Cloud_r.png" alt="" class="absolute right-0 top-[2.6875rem] h-[5.6875rem] w-auto pointer-events-none animate-drift-in-right [animation-delay:2.7s]">
 
-          <div class="absolute top-[172px] left-0 right-0 z-10 flex flex-col items-center">
-            <p class="mb-12 text-[18px] leading-[30px] tracking-[0.1em] text-[#000000] animate-fade-in [animation-delay:1.7s]">
+          <div class="absolute top-[10.75rem] left-0 right-0 z-10 flex flex-col items-center">
+            <p class="mb-12 text-[1.125rem] leading-[1.875rem] tracking-[0.1em] text-[#000000] animate-fade-in [animation-delay:1.7s]">
               <span class="font-medium">
                 前方有一座美肌之池。<br/>
                 據說，當你靜心祈願，<br/>
               </span>
-              <span class="block mt-[23px] font-black">你的「美肌守護神」就會給予回應...</span>
+              <span class="block mt-[1.4375rem] font-black">你的「美肌守護神」就會給予回應...</span>
             </p>
             <!-- 按鈕：雲出現後才淡入（外層負責淡入，按鈕本身維持脈動） -->
             <div class="animate-fade-in [animation-delay:4.9s]">
-              <button class="btn-primary !w-[130px] h-[40px] !py-0 !rounded-[10px] animate-pulse-scale font-black !text-[14px] leading-[30px] !tracking-[0.1em] !text-[#ffffff] !bg-[#000000]" @click="go('q1')">
-                <img src="./assets/2_Arrow 1.png" alt="" class="block h-[10px] w-auto mr-[10px] -scale-x-100">
+              <button class="btn-primary !w-[8.125rem] h-[2.5rem] !py-0 !rounded-[0.625rem] animate-pulse-scale font-black !text-[0.875rem] leading-[1.875rem] !tracking-[0.1em] !text-[#ffffff] !bg-[#000000]" @click="go('q1')">
+                <img src="./assets/2_Arrow 1.png" alt="" class="block h-[0.625rem] w-auto mr-[0.625rem] -scale-x-100">
                 繼續前進
-                <img src="./assets/2_Arrow 1.png" alt="" class="block h-[10px] w-auto ml-[10px]">
+                <img src="./assets/2_Arrow 1.png" alt="" class="block h-[0.625rem] w-auto ml-[0.625rem]">
               </button>
             </div>
           </div>
@@ -377,7 +387,7 @@
         <!-- ===== 拖拉畫面  ===== -->
         <section
           x-show="screen === 'drag'"
-          class="relative w-full h-full bg-[url(./assets/active/blue_bg.png)]">
+          class="relative w-full h-full bg-[url(./assets/active/blue_bg.jpg)]">
           <div id="can_back" class="absolute -bottom-37 left-1/2 -translate-x-1/2 w-124 h-115.75">
             <img src="./assets/active/can_back.png" class="w-full h-full"/>
           </div>
@@ -393,7 +403,12 @@
           <div id="can_front" class="absolute -bottom-37 left-1/2 -translate-x-1/2 w-124 h-115.75 z-10">
             <img src="./assets/active/can_front.png" class="w-full h-full"/>
           </div>
-          <div id="drag_hint" class="absolute bottom-18.75 left-0 flex items-center justify-center w-full h-10 bg-white/75 text-sm font-black z-10">
+          <div id="drag_hint"
+            x-show="screen === 'drag'"
+            x-transition:enter="transition-opacity duration-700 delay-[3000ms]"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            class="absolute bottom-18.75 left-0 flex items-center justify-center w-full h-10 bg-white/75 text-sm font-black z-10">
             拖放物件至福罐中
           </div>
         </section>
@@ -402,7 +417,7 @@
         <section
           id="final"
           x-show="screen === 'spin'"
-          class="relative flex items-center justify-center w-full h-full bg-[url(./assets/active/blue_bg.png)]">
+          class="relative flex items-center justify-center w-full h-full bg-[url(./assets/active/blue_bg.jpg)]">
           <div id="final_dark_bg" class="absolute inset-0 bg-[url(./assets/final/dark_bg.png)] bg-cover bg-center opacity-0"></div>
           <div id="spin_shadow" class="opacity-0 relative h-116 w-full">
             <img src="./assets/final/horse_shadow.png" class="shadow-animal absolute right-18.5 top-0 h-27.5 w-auto -rotate-12" />
@@ -418,17 +433,17 @@
 
           <div id="final_flash" class="absolute opacity-0 inset-0 overflow-hidden z-20">
             <!-- 射線 (7條，各有不同角度、寬高、透明度) -->
-            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 26px);width:52px;height:210px;background:white;border-radius:9999px;opacity:.88;transform-origin:50% 100%;"></div>
-            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 17px);width:34px;height:265px;background:white;border-radius:9999px;opacity:.90;transform-origin:50% 100%;"></div>
-            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 30px);width:60px;height:190px;background:white;border-radius:9999px;opacity:.85;transform-origin:50% 100%;"></div>
-            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 20px);width:40px;height:245px;background:white;border-radius:9999px;opacity:.87;transform-origin:50% 100%;"></div>
-            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 27px);width:54px;height:205px;background:white;border-radius:9999px;opacity:.85;transform-origin:50% 100%;"></div>
-            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 15px);width:30px;height:280px;background:white;border-radius:9999px;opacity:.90;transform-origin:50% 100%;"></div>
-            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 23px);width:46px;height:220px;background:white;border-radius:9999px;opacity:.88;transform-origin:50% 100%;"></div>
-            <!-- 外圓 50% 透明，直徑比內圓大 126px -->
-            <div id="flash_outer" style="position:absolute;top:50%;left:50%;width:1026px;height:1026px;margin:-513px 0 0 -513px;border-radius:50%;background:rgba(255,255,255,.50);"></div>
+            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 1.625rem);width:3.25rem;height:13.125rem;background:white;border-radius:9999px;opacity:.88;transform-origin:50% 100%;"></div>
+            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 1.0625rem);width:2.125rem;height:16.5625rem;background:white;border-radius:9999px;opacity:.90;transform-origin:50% 100%;"></div>
+            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 1.875rem);width:3.75rem;height:11.875rem;background:white;border-radius:9999px;opacity:.85;transform-origin:50% 100%;"></div>
+            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 1.25rem);width:2.5rem;height:15.3125rem;background:white;border-radius:9999px;opacity:.87;transform-origin:50% 100%;"></div>
+            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 1.6875rem);width:3.375rem;height:12.8125rem;background:white;border-radius:9999px;opacity:.85;transform-origin:50% 100%;"></div>
+            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 0.9375rem);width:1.875rem;height:17.5rem;background:white;border-radius:9999px;opacity:.90;transform-origin:50% 100%;"></div>
+            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 1.4375rem);width:2.875rem;height:13.75rem;background:white;border-radius:9999px;opacity:.88;transform-origin:50% 100%;"></div>
+            <!-- 外圓 50% 透明，直徑比內圓大 7.875rem -->
+            <div id="flash_outer" style="position:absolute;top:50%;left:50%;width:64.125rem;height:64.125rem;margin:-32.0625rem 0 0 -32.0625rem;border-radius:50%;background:rgba(255,255,255,.50);"></div>
             <!-- 內圓 完全不透明，擴大至蓋滿畫面 -->
-            <div id="flash_inner" style="position:absolute;top:50%;left:50%;width:900px;height:900px;margin:-450px 0 0 -450px;border-radius:50%;background:#fff;"></div>
+            <div id="flash_inner" style="position:absolute;top:50%;left:50%;width:56.25rem;height:56.25rem;margin:-28.125rem 0 0 -28.125rem;border-radius:50%;background:#fff;"></div>
           </div>
         </section>
 
@@ -440,7 +455,7 @@
           <div id="result" class="w-full bg-[url(./assets/bg.png)] bg-cover bg-center relative">
             <!-- Content -->
             <template x-for="item in results" :key="item.animal">
-              <div x-show="item.animal === resultAnimal" class="relative flex flex-col items-center gap-5 px-7.5 pt-7.25 pb-8.75">
+              <div x-show="item.animal === resultAnimal" class="relative flex flex-col items-center gap-5 px-7.5 pt-7.25 pb-18.75">
                 <!-- Photo Area -->
                 <div class="w-82.5 h-156.5 overflow-hidden">
                   <img :src="item.shareImage" :alt="item.title" class="w-full h-full object-cover" />
@@ -456,10 +471,10 @@
                     </p>
                     <div class="flex justify-between gap-6.25 h-10 w-full">
                       <button class="flex-1 flex items-center justify-center bg-black rounded-md">
-                        <img src="./assets/animal/share_test.svg" class="w-auto h-[19.42px]"/>
+                        <img src="./assets/animal/share_test.svg" class="w-auto h-[1.21375rem]"/>
                       </button>
                       <button @click="restart()" class="flex-1 flex items-center justify-center bg-black rounded-md">
-                        <img src="./assets/animal/play_again.svg" class="w-auto h-[19.42px]"/>
+                        <img src="./assets/animal/play_again.svg" class="w-auto h-[1.21375rem]"/>
                       </button>
                     </div>
                     <hr class="border-black/50" />
@@ -516,7 +531,7 @@
                       <img :src="item.serialsImage" alt="store" class="w-22.5 h-15 object-cover">
                       <a :href="item.serialsLink" class="cursor-pointer flex flex-1 items-center justify-between pr-5 bg-white">
                         <p x-text="item.serials" class="flex-1 font-medium text-[10px] text-center"></p>
-                        <img src="./assets/animal/arrow_right.svg" class="w-[5px] h-2.5"/>
+                        <img src="./assets/animal/arrow_right.svg" class="w-[0.3125rem] h-2.5"/>
                       </a>
                     </div>
                   </div>
@@ -529,7 +544,7 @@
       </div>
 
       <!-- Footer -->
-      <footer class="flex-none flex justify-between items-center py-2.5 px-7.5 z-30 bg-white">
+      <footer class="absolute bottom-0 left-0 w-full flex justify-between items-center h-10 py-2.5 px-7.5 z-30 bg-white">
         <img src="./assets/logo.svg" alt="logo" class="w-auto h-3">
         <p class="leading-2.5 text-[#787878] text-[0.375rem] text-right">Copyright©Ryohin Keikaku Co., Ltd. ©MUJI (Taiwan) Co., Ltd.<br/>
         All rights reserved.擁有及保留本網站所有權利。</p>
@@ -666,13 +681,26 @@
               },   
               onRelease: (draggable) => {
                 draggable.stop()
-                anime.animate('#drag_hint', { opacity: 0, duration: 1000, ease: 'easeInExpo' })
-                anime.animate('#active', {
-                  translateY: 300,
-                  duration: 1000,
-                  ease: 'easeInExpo',
-                  onComplete: () => this.dragTransitionAnimation()
-                })
+                // 取得當前 瀏覽器 height
+                let viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+                if(viewportHeight > 690 && window.innerWidth >= 640) {
+                  viewportHeight = 690; // 限制最大高度為 690px
+                }
+                const ratio = 190 / 690;
+                const threshold = viewportHeight * ratio; // 計算閾值
+                
+                if (draggable.y > threshold) {
+                  const translateRatio = 300 / 690
+                  const translateY = viewportHeight * translateRatio
+                  draggable.stop()
+                  anime.animate('#drag_hint', { opacity: 0, duration: 1000, ease: 'easeInExpo' })
+                  anime.animate('#active', {
+                    translateY: translateY,
+                    duration: 1000,
+                    ease: 'easeInExpo',
+                    onComplete: () => this.dragTransitionAnimation()
+                  })
+                }
               },                                                                                                   
             })
           },
