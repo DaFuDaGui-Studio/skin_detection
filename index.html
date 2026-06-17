@@ -265,7 +265,7 @@
             <img src="./assets/1_Can Shape.png" alt="美肌守護神" class="w-[314px] h-[414px]">
             <!-- 直書標題：相對罐子圖片絕對置中 -->
             <h1 class="vertical-text absolute top-[54px] left-1/2 -translate-x-1/2 text-white text-[44px] font-black leading-[50px] tracking-[0.1em]
-                       drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]">
+                      ">
               美肌守護神
             </h1>
             <!-- 星星：相對罐子圖片定位（左上 / 右下） -->
@@ -339,8 +339,8 @@
               <span class="block mt-[1.4375rem] font-black">你的「美肌守護神」就會給予回應...</span>
             </p>
             <!-- 按鈕：雲出現後才淡入（外層負責淡入，按鈕本身維持脈動） -->
-            <div class="animate-fade-in [animation-delay:4.9s]">
-              <button class="btn-primary !w-[8.125rem] h-[2.5rem] !py-0 !rounded-[0.625rem] animate-pulse-scale font-black !text-[0.875rem] leading-[1.875rem] !tracking-[0.1em] !text-[#ffffff] !bg-[#000000]" @click="goQ1()">
+            <div class="animate-fade-in [animation-delay:1.7s]">
+              <button class="btn-primary !w-[9.25rem] h-[3.125rem] !py-0 !rounded-[0.625rem] animate-pulse-scale font-black !text-[1.25rem] leading-[1.875rem] !tracking-[0.1em] !text-[#ffffff] !bg-[#000000]" @click="goQ1()">
                 <img src="./assets/2_Arrow 1.png" alt="" class="block h-[0.625rem] w-auto mr-[0.625rem] -scale-x-100">
                 繼續前進
                 <img src="./assets/2_Arrow 1.png" alt="" class="block h-[0.625rem] w-auto ml-[0.625rem]">
@@ -411,8 +411,10 @@
           </div>
 
           <!-- 倒水至手中的動態（依所選顏色，靠近掌心上方） -->
+          <!-- Apple/WebKit(含桌機 Safari) 用 HEVC .mov；其他用 WebM(VP9 alpha)。
+               桌機 Safari 雖能播 webm 但不支援 webm 透明，故需用 JS 偵測來指定來源。 -->
           <video id="wash-video" x-ref="washVideo" x-show="washing" muted playsinline
-                 :src="washColor ? washAssets[washColor].video : ''"
+                 :src="washColor ? washAssets[washColor][isApple ? 'mov' : 'video'] : ''"
                  class="absolute top-26 left-[138px] w-[320px] h-auto rotate-[19.83deg] pointer-events-none z-[5]"></video>
 
           <!-- 提示詞：3 秒未動作後出現，玩家動作後淡出（樣式同「拖放物件至福罐中」） -->
@@ -664,11 +666,12 @@
           washColor: '',         // 所選顏色：pink / blue / green / orange
           _washDone: false,      // 防止圓形擴散重複觸發
           washAssets: {
-            pink:   { video: './assets/3_Wash Pink.webm',   circle: './assets/3_Pink-Circle.png',     bg: './assets/Pink BG.png' },
-            blue:   { video: './assets/3_Wash Blue.webm',   circle: './assets/3_Blue-Circle.png',     bg: './assets/Blue BG.png' },
-            green:  { video: './assets/3_Wash Green.webm',  circle: './assets/3_Green-Circle.png',    bg: './assets/Green BG.png' },
-            orange: { video: './assets/3_Wash Orange.webm', circle: './assets/3_Orange-Circle 1.png', bg: './assets/Orange BG.png' },
+            pink:   { video: './assets/3_Wash Pink.webm',   mov: './assets/3_Wash Pink.mov',   circle: './assets/3_Pink-Circle.png',     bg: './assets/Pink BG.png' },
+            blue:   { video: './assets/3_Wash Blue.webm',   mov: './assets/3_Wash Blue.mov',   circle: './assets/3_Blue-Circle.png',     bg: './assets/Blue BG.png' },
+            green:  { video: './assets/3_Wash Green.webm',  mov: './assets/3_Wash Green.mov',  circle: './assets/3_Green-Circle.png',    bg: './assets/Green BG.png' },
+            orange: { video: './assets/3_Wash Orange.webm', mov: './assets/3_Wash Orange.mov', circle: './assets/3_Orange-Circle 1.png', bg: './assets/Orange BG.png' },
           },
+          isApple: false,        // 是否為 Apple/WebKit（Safari、iOS）→ 用 HEVC .mov
           waterFront: false,     // 水面遮罩（第二張背景）是否顯示
           coinPhase: false,      // 金幣是否可滑動丟出
           coinTouched: false,    // 玩家是否已操作（用於提示詞淡出）
@@ -784,7 +787,9 @@
           },
 
           init() {
-            anime.createDraggable('#active', {                                                                      
+            // Apple/WebKit（Safari 桌機與 iOS，含 iOS Chrome）→ 用 HEVC .mov（webm 透明在 WebKit 會變黑）
+            this.isApple = /Apple/.test(navigator.vendor);
+            anime.createDraggable('#active', {
               x: false,                                                                                             
               y: {                                                                                                  
                 modifier: val => Math.max(0, val),                                                                  
@@ -852,6 +857,7 @@
             Alpine.nextTick(() => {
               const v = this.$refs.washVideo;
               if (v) {
+                v.load();            // 來源（<source>）依顏色更新後需重新載入
                 v.currentTime = 0;
                 const p = v.play();
                 if (p && p.catch) p.catch(() => {});
