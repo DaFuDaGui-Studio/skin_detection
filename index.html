@@ -103,6 +103,20 @@
       }
       .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
 
+      /* animal-item 水中漂浮 */
+      @keyframes float-water {
+        0%, 100% { transform: translateY(0); }
+        50%       { transform: translateY(-10px); }
+      }
+      .animal-item {
+        animation: float-water 3s ease-in-out infinite;
+      }
+      #horse-item  { animation-delay: 0s; }
+      #bird-item   { animation-delay: 0.6s; }
+      #cat-item    { animation-delay: 1.2s; }
+      #fish-item   { animation-delay: 0.3s; }
+      #rabbit-item { animation-delay: 0.9s; }
+
       /* 跑馬燈 */
       .marquee {
         @apply w-full overflow-hidden pointer-events-none;
@@ -454,29 +468,55 @@
 
         <!-- ===== 問題 3 ===== -->
         <section
+          id="q3"
           x-show="screen === 'q3'"
-          x-transition:enter="transition ease-out duration-500"
-          x-transition:enter-start="opacity-0 translate-x-8"
-          x-transition:enter-end="opacity-100 translate-x-0"
+          class="relative h-full pt-12"
         >
-          <p class="text-xs tracking-[0.3em] text-[#9a978f] mb-2">QUESTION 03</p>
-          <h2 class="text-lg font-medium text-muji-ink leading-relaxed mb-8">
-            突然，池水中有東西慢慢浮上來。<br/>你伸手接住的是？
-          </h2>
-          <div class="space-y-3">
-            <template x-for="(opt, i) in questions[2]" :key="i">
-              <button class="option" @click="finish(i)">
-                <span class="option-index" x-text="String.fromCharCode(65 + i)"></span>
-                <span x-text="opt"></span>
-              </button>
-            </template>
+          <div id="q3-question">
+            <div class="flex justify-center items-center gap-x-1">
+              <div class="w-10 h-[0.5px] bg-black"></div>
+              <h3>Q3</h3>
+              <div class="w-10 h-[0.5px] bg-black"></div>
+            </div>
+            <h2 class="text-lg font-medium text-black text-center leading-relaxed mt-5">
+              突然，池水中有東西慢慢浮上來。<br/><span class="font-black">你伸手接住的是？</span>
+            </h2>
+          </div>
+          <div id="hand" class="absolute -bottom-76 left-10 w-125">
+            <img src="./assets/items/hand.png" class="w-125 h-auto"/>
+          </div>
+          <div id="horse-item" @click="moveHand('horse', 0)" class="animal-item absolute left-12.25 top-56">
+            <img src="./assets/items/horse.png" class="w-26.5 h-auto"/>
+          </div>
+          <div id="bird-item" @click="moveHand('bird', 1)" class="animal-item absolute right-7.5 bottom-41">
+            <img src="./assets/items/bird.png" class="w-26.5 h-auto"/>
+          </div>
+          <div id="cat-item" @click="moveHand('cat', 3)" class="animal-item absolute left-10.75 bottom-19.25">
+            <img src="./assets/items/cat.png" class="w-26.5 h-auto"/>
+          </div>
+          <div id="fish-item" @click="moveHand('fish', 2)" class="animal-item absolute left-1/2 -translate-x-1/2 bottom-57">
+            <img src="./assets/items/fish.png" class="w-26.5 h-auto"/>
+          </div>
+          <div id="rabbit-item" @click="moveHand('rabbit', 4)" class="animal-item absolute right-16.75 top-46">
+            <img src="./assets/items/rabbit.png" class="w-26.5 h-auto"/>
+          </div>
+          
+          <!-- absolute -bottom-37 left-1/2 -translate-x-1/2 -->
+          <div id="item_can_back" class="hidden absolute -bottom-full left-1/2 -translate-x-1/2 w-124 h-115.75">
+            <img src="./assets/active/can_back.png" class="w-full h-full"/>
+          </div>
+          
+          <!-- absolute -bottom-37 left-1/2 -translate-x-1/2 -->
+          <div id="item_can_front" class="hidden absolute -bottom-full left-1/2 -translate-x-1/2 w-124 h-115.75 z-10">
+            <img src="./assets/active/can_front.png" class="w-full h-full"/>
           </div>
         </section>
 
         <!-- ===== 拖拉畫面  ===== -->
         <section
+          id="drag"
           x-show="screen === 'drag'"
-          class="relative w-full h-full bg-[url(./assets/active/blue_bg.jpg)]">
+          class="relative w-full h-full">
           <div id="can_back" class="absolute -bottom-37 left-1/2 -translate-x-1/2 w-124 h-115.75">
             <img src="./assets/active/can_back.png" class="w-full h-full"/>
           </div>
@@ -506,7 +546,7 @@
         <section
           id="final"
           x-show="screen === 'spin'"
-          class="relative flex items-center justify-center w-full h-full bg-[url(./assets/active/blue_bg.jpg)]">
+          class="relative flex items-center justify-center w-full h-full">
           <div id="final_dark_bg" class="absolute inset-0 bg-[url(./assets/final/dark_bg.png)] bg-cover bg-center opacity-0"></div>
           <div id="spin_shadow" class="opacity-0 relative h-116 w-full">
             <img src="./assets/final/horse_shadow.png" class="shadow-animal absolute right-18.5 top-0 h-27.5 w-auto -rotate-12" />
@@ -801,7 +841,7 @@
                 if(viewportHeight > 690 && window.innerWidth >= 640) {
                   viewportHeight = 690; // 限制最大高度為 690px
                 }
-                const ratio = 190 / 690;
+                const ratio = 180 / 690;
                 const threshold = viewportHeight * ratio; // 計算閾值
                 
                 if (draggable.y > threshold) {
@@ -852,6 +892,10 @@
             if (this.washing) return;
             this.answers[0] = optIndex;
             this.washColor = ['pink', 'blue', 'green', 'orange'][optIndex];
+            const bgUrl = `url(./assets/active/${this.washColor}_bg.jpg)`;
+            ['q3', 'drag', 'final'].forEach(id => {
+              document.getElementById(id).style.backgroundImage = bgUrl;
+            });
             this.washing = true;        // 觸發題目／選項淡出、顯示倒水動態
             this._washDone = false;
             Alpine.nextTick(() => {
@@ -940,11 +984,98 @@
               },
             });
           },
-          finish(optIndex) {
+          moveHand(animal, optIndex) {
             this.answers[2] = optIndex;
-            // 第三題（5 個選項）對應 5 種結果
             this.resultAnimal = this.results[optIndex]['animal'];
-            this.screen = 'drag';
+
+            // 停止所有 animal-item 漂浮動畫
+            document.querySelectorAll('.animal-item').forEach(el => {
+              el.style.animation = 'none';
+            });
+
+            // 沒選到的item與題目淡出
+            const fadeOuts = [
+              ...document.querySelectorAll('.animal-item:not(#' + animal + '-item)'),
+              document.getElementById('q3-question'),
+            ];
+            fadeOuts.forEach(el => {
+              anime.animate(el, { opacity: [1, 0], duration: 400, ease: 'easeOutQuad',
+                onComplete: () => { el.style.display = 'none'; }
+              });
+            });
+
+            //手動往item移動動畫
+            setTimeout(() => {
+              const hand = document.getElementById('hand');
+              const item = document.getElementById(`${animal}-item`);
+              const parent = hand.parentElement;
+
+              const handRect = hand.getBoundingClientRect();
+              const itemRect = item.getBoundingClientRect();
+              const parentRect = parent.getBoundingClientRect();
+
+              const targetTop = itemRect.top - parentRect.top - 120;
+              const currentTop = handRect.top - parentRect.top;
+              const translateY = targetTop - currentTop;
+
+              const itemCenterX = itemRect.left - parentRect.left + itemRect.width / 2;
+              const handCenterX = handRect.left - parentRect.left + handRect.width / 2;
+              const translateX = itemCenterX - handCenterX;
+
+              anime.animate('#hand', {
+                translateX,
+                translateY,
+                duration: 800,
+                ease: 'easeOutQuad',
+                onComplete: () => {
+                  setTimeout(() => {
+                    // 手淡出
+                    anime.animate('#hand', { opacity: [1, 0], duration: 400, ease: 'easeOutQuad' });
+
+                    // 被選到的 item 同時: 換圖、放大、移動、角度
+                    const img = item.querySelector('img');
+                    img.src = `./assets/active/${animal}.png`;
+
+                    const targetWidth = 28.5 * 4; // w-28.5 = 114px
+                    const itemRect2 = item.getBoundingClientRect();
+                    const parentRect2 = parent.getBoundingClientRect();
+                    const targetItemTop = 25 * 4; // top-25 = 100px
+                    const targetItemLeft = parentRect2.width / 2 - targetWidth / 2; // 以新寬度置中
+                    const deltaX = targetItemLeft - (itemRect2.left - parentRect2.left);
+                    const deltaY = targetItemTop - (itemRect2.top - parentRect2.top);
+
+                    anime.animate(item, {
+                      translateX: deltaX,
+                      translateY: deltaY,
+                      ...(animal !== 'bird' && { rotate: -19 }),
+                      duration: 1000,
+                      ease: 'easeOutQuad',
+                    });
+                    anime.animate(img, {
+                      width: [itemRect2.width, targetWidth],
+                      duration: 1000,
+                      ease: 'easeOutQuad',
+                      onComplete: () => {
+                        this.screen = 'drag';
+                      }
+                    });
+
+                    setTimeout(() => {
+                      // #item_can_back 跟 #item_can_front 同步移動到 -bottom-37
+                      ['item_can_back', 'item_can_front'].forEach(id => {
+                        const el = document.getElementById(id);
+                        el.classList.remove('hidden');
+                        anime.animate(el, {
+                          bottom: ['-100%', `${-37 * 4}px`],
+                          duration: 800,
+                          ease: 'easeOutQuad',
+                        });
+                      });
+                    }, 200)
+                  }, 500)
+                },
+              });
+            }, 500);
           },
           restart() {
             location.reload();
