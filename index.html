@@ -332,6 +332,13 @@
         animation: ring-pulse var(--r-dur) var(--r-del) ease-out infinite backwards;
       }
 
+      .beam {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform-origin: 0 0;
+      }
+
       /* result 全白畫面轉場 */
       @keyframes circle-reveal {
         from { clip-path: circle(0 at 50% 10.6875rem); }
@@ -340,7 +347,7 @@
 
       #result {
         clip-path: circle(0 at 50% 10.6875rem);
-        animation: circle-reveal 1.5s ease-out 0.5s forwards;
+        animation: circle-reveal 1.0s ease-out 0.5s forwards;
       }
 
       /* 守護神剪影旋轉 */
@@ -779,14 +786,14 @@
           </div>
 
           <div id="final_flash" class="absolute opacity-0 inset-0 overflow-hidden z-20">
-            <!-- 射線 (7條，各有不同角度、寬高、透明度) -->
-            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 1.625rem);width:3.25rem;height:13.125rem;background:white;border-radius:9999px;opacity:.88;transform-origin:50% 100%;"></div>
-            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 1.0625rem);width:2.125rem;height:16.5625rem;background:white;border-radius:9999px;opacity:.90;transform-origin:50% 100%;"></div>
-            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 1.875rem);width:3.75rem;height:11.875rem;background:white;border-radius:9999px;opacity:.85;transform-origin:50% 100%;"></div>
-            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 1.25rem);width:2.5rem;height:15.3125rem;background:white;border-radius:9999px;opacity:.87;transform-origin:50% 100%;"></div>
-            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 1.6875rem);width:3.375rem;height:12.8125rem;background:white;border-radius:9999px;opacity:.85;transform-origin:50% 100%;"></div>
-            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 0.9375rem);width:1.875rem;height:17.5rem;background:white;border-radius:9999px;opacity:.90;transform-origin:50% 100%;"></div>
-            <div class="flash-ray" style="position:absolute;bottom:50%;left:calc(50% - 1.4375rem);width:2.875rem;height:13.75rem;background:white;border-radius:9999px;opacity:.88;transform-origin:50% 100%;"></div>
+            <!-- 射線 -->
+            <img class="beam" src="./assets/final/left_top.png"/>
+            <img class="beam" src="./assets/final/left_middle.png"/>
+            <img class="beam" src="./assets/final/left_bottom.png"/>
+            <img class="beam" src="./assets/final/right_top.png"/>
+            <img class="beam" src="./assets/final/right_middle.png"/>
+            <img class="beam opacity-50" src="./assets/final/right_bottom.png"/>
+           
             <!-- 外圓 50% 透明，直徑比內圓大 7.875rem -->
             <div id="flash_outer" style="position:absolute;top:50%;left:50%;width:64.125rem;height:64.125rem;margin:-32.0625rem 0 0 -32.0625rem;border-radius:50%;background:rgba(255,255,255,.50);"></div>
             <!-- 內圓 完全不透明，擴大至蓋滿畫面 -->
@@ -1364,12 +1371,18 @@
           },
           // 9. animal - 閃光白畫面轉場
           flashAnimation() {
-            const rayAngles = [15, 60, 100, 150, 200, 255, 305]
-            document.querySelectorAll('.flash-ray').forEach((ray, i) => {
-              anime.set(ray, { rotate: rayAngles[i], scaleY: 0 })
-            })
             anime.set('#flash_outer', { scale: 0 })
             anime.set('#flash_inner', { scale: 0 })
+            const beamTargets = {
+              left_top:    { x: -900, y: -950 },
+              left_middle: { x: -800, y: -50 },
+              left_bottom: { x: -1200, y:  900 },
+              right_top:   { x:  400, y: -1300 },
+              right_middle:{ x:  500, y:  -1000 },
+              right_bottom:{ x:  160, y:  340 },
+            }
+            
+            anime.set('#final_flash .beam', { translateX: 195, translateY: 345, scale: 0 })
 
             // 先讓 #final_flash 從 opacity-0 變可見
             anime.animate('#final_flash', {
@@ -1378,28 +1391,37 @@
               ease: 'linear',
               onComplete: () => {
                 // 射線射出
-                anime.animate('.flash-ray', {
-                  scaleY: 3,
-                  duration: 280,
-                  ease: 'easeOutExpo',
-                  delay: anime.stagger(20),
-                })
                 // 外圓（50% 透明）擴散
                 anime.animate('#flash_outer', {
                   scale: 1,
-                  duration: 700,
+                  duration: 1000,
                   ease: 'easeOutExpo',
-                  delay: 80,
+                  delay: 100,
                 })
                 // 內圓（全白）擴散蓋滿畫面
                 anime.animate('#flash_inner', {
                   scale: 1,
-                  duration: 800,
+                  duration: 1200,
                   ease: 'easeOutQuart',
-                  delay: 200,
+                  delay: 150,
                   onComplete: () => {
                     this.screen = 'result'
                   }
+                })
+                // 射線發射：比 flash_inner 晚開始，比他快結束
+                const beams = document.querySelectorAll('#final_flash .beam')
+                beams.forEach((beam) => {
+                  const name = beam.getAttribute('src').split('/').pop().replace('.png', '')
+                  const target = beamTargets[name]
+                  if (!target) return
+                  anime.animate(beam, {
+                    translateX: target.x,
+                    translateY: target.y,
+                    scale: [0, 4],
+                    duration: 600,
+                    delay: 300,
+                    ease: 'easeOutCubic',
+                  })
                 })
               }
             })
