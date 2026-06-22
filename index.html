@@ -565,20 +565,25 @@
         <section
           x-show="screen === 'q2'"
           id="q2"
-          class="h-screen"
+          class="absolute inset-0"
         >
-          <div id="q2-qa">
-            <p class="text-xs tracking-[0.3em] text-[#9a978f] mb-2">QUESTION 02</p>
-            <h2 class="text-lg font-medium text-muji-ink leading-relaxed mb-8">
-              你看到池水泛起什麼形狀的漣漪?
-            </h2>
+          <div id="q2-qa" class="absolute inset-0">
+            <div class="absolute top-12 inset-x-0 px-7 text-center">
+              <p class="flex justify-center items-center gap-3 text-[1.125rem] leading-[1.875rem] tracking-[0.1em] text-[#000000] font-normal mb-2">
+                <span class="w-10 border-t-[0.5px] border-black"></span>
+                Q2
+                <span class="w-10 border-t-[0.5px] border-black"></span>
+              </p>
+              <h2 class="text-[1.125rem] leading-[1.875rem] tracking-[0.1em] text-[#000000] font-black mb-8">
+                你看到池水泛起什麼形狀的漣漪?
+              </h2>
+            </div>
 
-            <!-- 選項 -->
-            <div class="space-y-3">
-              <template x-for="(shape, i) in questions[1]" :key="shape">
-                <button class="option" @click="chooseWater(shape)">
-                  <span class="option-index" x-text="String.fromCharCode(65 + i)"></span>
-                  <span x-text="shape"></span>
+            <!-- 選項：2*2 圖片排列，間距 22px，整塊定位 top-205 left-51 -->
+            <div class="absolute top-[205px] left-[51px] grid grid-cols-2 gap-[22px]">
+              <template x-for="shape in questions[1]" :key="shape">
+                <button @click="chooseWater(shape)" class="block cursor-pointer transition-transform duration-300 hover:-translate-y-0.5 active:scale-[0.98]">
+                  <img :src="`./assets/5_watershape_${shape}.png`" :alt="shape" class="block w-[132px] h-[176px] pointer-events-none">
                 </button>
               </template>
             </div>
