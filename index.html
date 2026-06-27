@@ -1194,11 +1194,20 @@
               if (v) {
                 v.load();            // 來源（<source>）依顏色更新後需重新載入
                 v.currentTime = 0;
+                // 以「影片實際播放進度」而非固定計時觸發圓形擴散，確保各平台都是「先倒水、後擴散」。
+                // iOS/Safari 的 HEVC .mov 需較長時間 load/解碼才開始播放，舊的固定 1 秒計時會搶在影片之前。
+                const onTime = () => {
+                  if (v.currentTime >= 1) {
+                    v.removeEventListener('timeupdate', onTime);
+                    this.washReveal();
+                  }
+                };
+                v.addEventListener('timeupdate', onTime);
                 const p = v.play();
                 if (p && p.catch) p.catch(() => {});
               }
-              // 影片播放 1 秒後，顏色圓形開始擴散
-              setTimeout(() => { this.washReveal(); }, 1000);
+              // 後備：萬一影片無法播放（自動播放被擋、無 timeupdate），最多 2.5 秒仍接續流程
+              setTimeout(() => { this.washReveal(); }, 2500);
             });
           },
           // 顏色圓形自掌心擴散至全畫面、背景染成所選顏色，隨後進入 Q2
