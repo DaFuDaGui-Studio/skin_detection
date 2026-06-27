@@ -991,7 +991,7 @@
             pink:   { video: './assets/3_Wash Pink.webm',   mov: './assets/3_Wash Pink.mov',   circle: './assets/3_Pink-Circle.png',     bg: './assets/Pink BG.png' },
             blue:   { video: './assets/3_Wash Blue.webm',   mov: './assets/3_Wash Blue.mov',   circle: './assets/3_Blue-Circle.png',     bg: './assets/Blue BG.png' },
             green:  { video: './assets/3_Wash Green.webm',  mov: './assets/3_Wash Green.mov',  circle: './assets/3_Green-Circle.png',    bg: './assets/Green BG.png' },
-            orange: { video: './assets/3_Wash Orange.webm', mov: './assets/3_Wash Orange.mov', circle: './assets/3_Orange-Circle 1.png', bg: './assets/Orange BG.png' },
+            orange: { video: './assets/3_Wash Orange_2.webm', mov: './assets/3_Wash Orange_2.mov', circle: './assets/3_Orange-Circle 1.png', bg: './assets/Orange BG.png' },
           },
           // 金幣丟出動畫素材（webm + mov，同滌淨動態的雙格式策略）
           coinAnim: { video: './assets/4_Coin Animation.webm', mov: './assets/4_Coin Animation.mov' },
@@ -1102,9 +1102,13 @@
             }
           ],
 
+          _preloadedVideos: [],   // 持有預載的 video 元素參考，避免被 GC 而中斷下載
+
           init() {
             // Apple/WebKit（Safari 桌機與 iOS，含 iOS Chrome）→ 用 HEVC .mov（webm 透明在 WebKit 會變黑）
             this.isApple = /Apple/.test(navigator.vendor);
+            // 預先載入滌淨動態與金幣動畫影片，避免使用者點選柄杓時才開始下載（約 1MB/支）造成卡頓
+            this.preloadWashVideos();
             // 拖拉罐
             anime.createDraggable('#active', {
               x: false,                                                                                             
@@ -1157,6 +1161,25 @@
             }, 450);
           },
           // Q1 — 選擇柄杓：題目與選項淡出 → 播放倒水動態 → 顏色圓形擴散 + 背景染色 → 進入 Q2
+          // 預載 4 支柄杓滌淨影片 + 金幣丟出動畫（依平台選 mov / webm）。
+          // 建立離屏 video 元素並設 preload="auto" 觸發瀏覽器下載並寫入快取，
+          // 之後 chooseWash／throwCoin 指定相同來源時可直接命中快取，無需等待下載。
+          preloadWashVideos() {
+            const key = this.isApple ? 'mov' : 'video';
+            const urls = [
+              ...Object.values(this.washAssets).map(a => a[key]),
+              this.coinAnim[key],
+            ];
+            urls.forEach(src => {
+              const v = document.createElement('video');
+              v.muted = true;
+              v.playsInline = true;
+              v.preload = 'auto';
+              v.src = src;
+              v.load();
+              this._preloadedVideos.push(v);   // 保留參考避免被回收
+            });
+          },
           chooseWash(color) {
             if (this.washing) return;
             this.washColor = color;
