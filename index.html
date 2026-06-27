@@ -715,7 +715,7 @@
           <div id="hand" class="absolute -bottom-76 left-10 w-125">
             <img src="./assets/items/hand.png" class="w-125 h-auto"/>
           </div>
-          <div id="horse-item" @click="moveHand('horse', 0)" class="animal-item absolute left-12.25 top-56">
+          <div id="horse-item" @click="moveHand('horse', 0)" class="animal-item absolute left-12.25 top-54">
             <img src="./assets/items/horse.png" class="w-26.5 h-auto"/>
           </div>
           <div id="bird-item" @click="moveHand('bird', 1)" class="animal-item absolute right-7.5 bottom-41">
@@ -727,7 +727,7 @@
           <div id="fish-item" @click="moveHand('fish', 2)" class="animal-item absolute left-1/2 -translate-x-1/2 bottom-57">
             <img src="./assets/items/fish.png" class="w-26.5 h-auto"/>
           </div>
-          <div id="rabbit-item" @click="moveHand('rabbit', 4)" class="animal-item absolute right-16.75 top-46">
+          <div id="rabbit-item" @click="moveHand('rabbit', 4)" class="animal-item absolute right-16.75 top-45">
             <img src="./assets/items/rabbit.png" class="w-26.5 h-auto"/>
           </div>
           
@@ -1105,7 +1105,7 @@
           chooseWash(color) {
             if (this.washing) return;
             this.washColor = color;
-            const bgUrl = `url(./assets/active/${this.washColor}_bg.jpg)`;
+            const bgUrl = `url(./assets/active/${this.washColor}_bg.png)`;
             document.getElementById('container').style.backgroundImage = bgUrl;
             this.washing = true;        // 觸發題目／選項淡出、顯示倒水動態
             this._washDone = false;
