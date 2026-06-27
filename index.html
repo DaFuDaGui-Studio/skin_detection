@@ -547,13 +547,23 @@
           <!-- 木牌（第 1 個淡入，疊在手部圖片上一層；圖層 z-[6]，位於金幣之下） -->
           <img id="wash-wood" src="./assets/Wood.png" alt="" class="absolute top-[498px] left-0 w-auto pointer-events-none animate-fade-in [animation-delay:0.6s] z-[6]">
 
-          <!-- 金幣（過場淡入；可向上滑動丟出。圖層 z-[7]，位於木頭之上、水面遮罩之下） -->
-          <img id="wash-coin" src="./assets/4_Coin.png" alt="" draggable="false"
-               x-show="washColor"
+          <!-- 金幣（過場淡入；可向上滑動丟出。圖層 z-[7]，位於木頭之上、水面遮罩之下）
+               外層為「可滑動感應區」，比金幣圖大一圈以便操作；金幣圖置中維持原尺寸與位置。 -->
+          <div x-show="washColor && !coinThrown"
                @dragstart.prevent
                @pointerdown="coinDown($event)" @pointermove="coinMove($event)" @pointerup="coinUp($event)" @pointercancel="coinUp($event)"
-               class="absolute top-[292px] left-1/2 -ml-[111px] w-[222px] h-[207px] opacity-0 touch-none select-none z-[7]"
+               class="absolute top-[232px] left-1/2 -ml-[161px] w-[322px] h-[327px] flex items-center justify-center touch-none select-none z-[7]"
                :class="coinPhase && !coinThrown ? 'cursor-grab active:cursor-grabbing' : 'pointer-events-none'">
+            <img id="wash-coin" src="./assets/4_Coin.png" alt="" draggable="false"
+                 class="w-[222px] h-[207px] opacity-0 pointer-events-none select-none">
+          </div>
+
+          <!-- 金幣丟出動畫（用影片素材取代程式控制；丟出後才顯示並播放。圖層 z-[7]，與靜態金幣同層、水面遮罩之下）
+               Apple/WebKit 用 HEVC .mov，其他用 WebM(VP9 alpha)，與其他動畫一致。
+               畫布為正方形（金幣起始時置中、寬約畫布 53%），對齊靜態金幣位置：寬 416、置中、top 186 -->
+          <video id="wash-coin-video" x-ref="washCoinVideo" x-show="coinThrown" muted playsinline preload="auto"
+                 :src="washColor ? coinAnim[isApple ? 'mov' : 'video'] : ''"
+                 class="absolute top-[186px] left-1/2 -ml-[208px] w-[416px] h-[416px] pointer-events-none select-none z-[7]"></video>
 
           <!-- 第二張背景（水面遮罩，top-355；圖層 z-[8]，介於金幣之上，金幣掉入時被其遮住） -->
           <img id="wash-water" x-show="waterFront" :src="washColor ? washAssets[washColor].bg : ''" alt=""
@@ -570,8 +580,10 @@
             </h2>
           </div>
 
-          <!-- 選項：柄杓（第 2 個淡入，靠頁面底部，圖層最前 z-[9]） -->
-          <div class="absolute -bottom-10 inset-x-0 flex items-end justify-center gap-2 px-7 animate-fade-in [animation-delay:1.1s] z-[9]" :class="washing && 'animate-fade-out-up'">
+          <!-- 選項：柄杓（第 2 個淡入，靠頁面底部，圖層最前 z-[9]）
+               淡出（animate-fade-out-up, 0.5s）結束後以 x-show 移除，避免殘留 z-[9] 圖層攔截金幣滑動 -->
+          <div x-show="!optionsGone"
+               class="absolute -bottom-10 inset-x-0 flex items-end justify-center gap-2 px-7 animate-fade-in [animation-delay:1.1s] z-[9]" :class="washing && 'animate-fade-out-up'">
             <template x-for="color in questions[0]" :key="color">
               <button class="cursor-pointer" @click="chooseWash(color)">
                 <img :src="`./assets/3_option_${color}.png`" alt="" class="w-auto">
@@ -972,6 +984,7 @@
 
           // Q1 柄杓滌淨動態
           washing: false,        // 是否正在播放滌淨動態
+          optionsGone: false,    // 柄杓選項淡出後是否已移除（避免殘留圖層攔截金幣滑動）
           washColor: '',         // 所選顏色：pink / blue / green / orange
           _washDone: false,      // 防止圓形擴散重複觸發
           washAssets: {
@@ -980,6 +993,8 @@
             green:  { video: './assets/3_Wash Green.webm',  mov: './assets/3_Wash Green.mov',  circle: './assets/3_Green-Circle.png',    bg: './assets/Green BG.png' },
             orange: { video: './assets/3_Wash Orange.webm', mov: './assets/3_Wash Orange.mov', circle: './assets/3_Orange-Circle 1.png', bg: './assets/Orange BG.png' },
           },
+          // 金幣丟出動畫素材（webm + mov，同滌淨動態的雙格式策略）
+          coinAnim: { video: './assets/4_Coin Animation.webm', mov: './assets/4_Coin Animation.mov' },
           isApple: false,        // 是否為 Apple/WebKit（Safari、iOS）→ 用 HEVC .mov
           waterFront: false,     // 水面遮罩（第二張背景）是否顯示
           coinPhase: false,      // 金幣是否可滑動丟出
@@ -1149,6 +1164,8 @@
             document.getElementById('container').style.backgroundImage = bgUrl;
             this.washing = true;        // 觸發題目／選項淡出、顯示倒水動態
             this._washDone = false;
+            // 柄杓選項淡出動畫（0.5s）結束後徹底移除，避免殘留圖層在滑金幣時被誤觸
+            setTimeout(() => { this.optionsGone = true; }, 500);
             Alpine.nextTick(() => {
               const v = this.$refs.washVideo;
               if (v) {
@@ -1212,27 +1229,33 @@
               anime.animate('#wash-coin', { translateY: 0, duration: 300, ease: 'easeOutQuad' });
             }
           },
-          // 金幣被拋擲出：木頭往下移出、金幣向上拋並旋轉，再落入水中淡出，接著進入 Q2
+          // 金幣被拋擲出：木頭往下移出，金幣丟出動畫改用影片素材播放，落入水中後進入 Q2
           throwCoin() {
             if (this.coinThrown) return;
-            this.coinThrown = true;
+            this.coinThrown = true;     // 隱藏靜態金幣、改顯示動畫影片
             this.coinTouched = true;
-            this.waterFront = true;   // 金幣向上滑動後才顯示水面遮罩（第二張背景）
-            // 底部木頭往下移出畫面
+            // 底部木頭往下移出畫面（先讓它可見地滑落，故水面遮罩稍後才出現）
             anime.animate('#wash-wood', { translateY: 400, duration: 800, ease: 'easeInQuad' });
-            // 金幣向上 165px ＋向右旋轉 44.31°
-            anime.animate('#wash-coin', {
-              translateY: -165, rotate: 44.31, duration: 450, ease: 'easeOutQuad',
-              onComplete: () => {
-                // 然後向下落入水中（top-264）同時淡出
-                anime.animate('#wash-coin', {
-                  translateY: -28, opacity: [1, 0], duration: 650, ease: 'easeInQuad',
-                  onComplete: () => {
-                    this.screen = 'q2';   // Q2 題目文字與選項出現
-                    this.washing = false;
-                  },
-                });
-              },
+            // 水面遮罩延後顯示：否則一出現就蓋住木頭（z-8 > z-6），看不到木頭下滑。
+            // 約 0.5 秒時木頭已明顯下移、金幣也接近頂點開始下降，此時浮現水面、金幣沉入。
+            setTimeout(() => { this.waterFront = true; }, 500);
+            // 播放金幣丟出動畫（影片），落入水中（約 1.3 秒）後切換至 Q2
+            let advanced = false;
+            const toQ2 = () => {
+              if (advanced) return;
+              advanced = true;
+              this.screen = 'q2';       // Q2 題目文字與選項出現
+              this.washing = false;
+            };
+            this.$nextTick(() => {
+              const v = this.$refs.washCoinVideo;
+              if (v) {
+                v.currentTime = 0;
+                const p = v.play();
+                if (p && p.catch) p.catch(() => {});  // 自動播放被擋仍照時間切換
+              }
+              // 金幣可見動畫約落在前 1.3 秒，餘為透明尾段，故以計時切換而非等整段影片結束
+              setTimeout(toQ2, 1300);
             });
           },
           // 5. Water
