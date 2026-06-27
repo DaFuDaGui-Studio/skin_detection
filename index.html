@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MUJI</title>
+    <!-- Third-party tracking CDN -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-361YVPYLP7"></script>
+    <script async src="https://connect.facebook.net/en_US/fbevents.js"></script>
+    <script async src="https://s.yimg.jp/images/listing/tool/cv/lt.js"></script>
+
     <!-- Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -363,6 +368,40 @@
   </head>
 
   <body class="flex items-center justify-center h-[100dvh] w-screen">
+    <!-- GA4 初始化 -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+    </script>
+
+    <!-- Facebook Pixel 初始化 -->
+    <script>
+      !(function (f) {
+        if (f.fbq) return;
+        var n = (f.fbq = function () {
+          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+        });
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = '2.0';
+        n.queue = [];
+      })(window);
+    </script>
+
+    <!-- LINE Ad 初始化 -->
+    <script>
+      window._ltq = window._ltq || [];
+      window._lt =
+        window._lt ||
+        function () {
+          window._ltq.push(arguments);
+        };
+    </script>
+
     <main
       x-data="quiz()"
       x-cloak
@@ -922,6 +961,7 @@
       ></div>
     </main>
 
+    <!-- 檢測程式 -->
     <script>
       function quiz() {
         return {
@@ -1454,6 +1494,105 @@
           },
         };
       }
+    </script>
+
+    <!-- Shared tracking initialization -->
+    <script src="https://www.muji.tw/muji-journal/js/vendors-tracking.js"></script>
+
+    <!-- 91APP SDK CDN -->
+    <script src="https://tracking-client.91app.com/tracking-service/sdk/ec/latest/main.min.js"></script>
+
+    <!-- 91APP Tracking SDK 初始化 + pageView -->
+    <script>
+      function waitForSdk(timeout = 5000) {
+        return new Promise((resolve, reject) => {
+          if (window.nineyi?.trackingSdk) return resolve();
+          const timer = setTimeout(() => {
+            clearInterval(poller);
+            console.error('[Tracking] SDK timeout');
+            reject();
+          }, timeout);
+          const poller = setInterval(() => {
+            if (window.nineyi?.trackingSdk) {
+              clearInterval(poller);
+              clearTimeout(timer);
+              resolve();
+            }
+          }, 50);
+        });
+      }
+
+      function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+          var r = (Math.random() * 16) | 0,
+            v = c === 'x' ? r : (r & 0x3) | 0x8;
+          return v.toString(16);
+        });
+      }
+
+      function checkIsLogin() {
+        return document.cookie.split(';').some((c) => c.trim().startsWith('MID='));
+      }
+
+      const initializeConfig = {
+        shopId: 41566,
+        gaConfig: {
+          countryName: 'tw',
+          googleAnalyticsTrackingId: 'UA-78758030-19',
+        },
+        gaFourConfig: {
+          googleAnalyticsFourGTagId: 'G-361YVPYLP7',
+        },
+        fbPixelConfig: {
+          allSiteFbPixelId: '1021834927899745',
+          customAudiencesPixelIds: ['343894544969170', '1497331951114241'],
+        },
+        lineAdConfig: {
+          isEnableLineAd: true,
+          tagEventSet: [
+            {
+              LineTagIdCode: '5b720194-cd05-457b-bfa9-e1e4ade431f6',
+            },
+          ],
+        },
+        adobeAAConfig: {
+          isEnable: true,
+        },
+        currency: 'TWD',
+        env: 'prod',
+        market: 'tw',
+        silo: '91app',
+        locale: 'zh-TW',
+      };
+
+      async function initTracking() {
+        try {
+          await waitForSdk();
+          console.log('[Tracking] SDK ready, initializing...');
+
+          window.nineyi.trackingSdk.initialize(initializeConfig);
+          console.log('[Tracking] SDK initialized');
+
+          const eventId = generateUUID();
+          setTimeout(() => {
+            window.nineyi.trackingSdk.pageView(
+              {
+                viewType: 'MujiFeaturePage',
+                pageTitle: '美肌守護神',
+                viewId: 'feature-GodofSkin',
+                isLogin: checkIsLogin(),
+              },
+              eventId,
+              'TWD'
+            );
+            console.log('[Tracking] pageView sent for Product');
+          }, 1000);
+        } catch (e) {
+          console.error('[Tracking] init failed:', e);
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', initTracking);
     </script>
   </body>
  </html>
