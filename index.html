@@ -368,6 +368,56 @@
   </head>
 
   <body class="flex items-center justify-center h-[100dvh] w-screen">
+    <div
+      id="password-overlay"
+      x-data="{
+        password: '',
+        error: false,
+        visible: false,
+        async init(){
+          
+        },
+        async check() {
+          const sheet_id = '1pRBsn5zCy0UehVRfuFn54TJcMD-G-NsdQICsHW4XSPw';
+          const url = `https://docs.google.com/spreadsheets/d/${sheet_id}/gviz/tq?tqx=out:json`;
+          const res = await fetch(url);
+          const text = await res.text();
+          const json = JSON.parse(text.replace(/^[^\(]*\(/, '').replace(/\);$/, ''));
+          const rows = json.table.rows.map((r) =>
+            r.c.map((c) => (c ? c.v : ''))
+          );
+          
+          if (this.password === rows[0][0]) {
+            document.getElementById('password-overlay').style.display = 'none';
+            this.error = false;
+          } else {
+            this.error = true;
+            this.password = '';
+          }
+        }
+      }"
+      class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#F2F1EE]"
+      style="background-image: url('./assets/Background_Texture.jpg'); background-size: cover; background-position: center;"
+    >
+      <div class="absolute inset-0 bg-[#F2F1EE]/80 pointer-events-none"></div>
+      <div class="relative flex flex-col items-center gap-6 w-72">
+        <p class="text-sm tracking-widest text-[#9a978f]">請輸入密碼</p>
+        <input
+          type="password"
+          x-model="password"
+          @keydown.enter="check()"
+          @focus="visible = true"
+          placeholder="Password"
+          class="w-full border-b border-[#3a3a3a] bg-transparent text-center text-[#3a3a3a] tracking-widest py-2 outline-none placeholder:text-[#c5c3bd] text-sm"
+        />
+        <p x-show="error" class="text-xs text-[#7F0019] tracking-wider -mt-2">密碼錯誤，請再試一次</p>
+        <button
+          @click="check()"
+          class="w-full rounded-full bg-[#3a3a3a] text-[#F2F1EE] tracking-widest py-3 text-sm hover:bg-black transition-colors duration-300"
+        >進入</button>
+      </div>
+    </div>
+    
     <!-- GA4 初始化 -->
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -955,7 +1005,7 @@
 
       <!-- Footer -->
       <footer class="absolute bottom-0 left-0 w-full flex justify-between items-center h-10 py-2.5 px-7.5 z-30 bg-white">
-        <img src="./assets/logo.svg" alt="logo" class="w-auto h-3">
+        <img src="./assets/imgi_1_original.png" alt="logo" class="w-auto h-3">
         <p class="leading-2.5 text-[#787878] text-[0.375rem] text-right">Copyright©Ryohin Keikaku Co., Ltd. ©MUJI (Taiwan) Co., Ltd.<br/>
         All rights reserved.擁有及保留本網站所有權利。</p>
       </footer>
@@ -1111,7 +1161,12 @@
             this.preloadWashVideos();
             // 拖拉罐
             anime.createDraggable('#active', {
-              x: false,                                                                                             
+              x: {
+                modifier: val => {
+                  const maxX = Math.min(window.innerWidth, 390);
+                  return Math.max(-maxX, Math.min(val, maxX));
+                }
+              },
               y: {                                                                                                  
                 modifier: val => Math.max(0, val),                                                                  
               },   
@@ -1122,7 +1177,7 @@
                 if(viewportHeight > 690 && window.innerWidth >= 640) {
                   viewportHeight = 690; // 限制最大高度為 690px
                 }
-                const ratio = 180 / 690;
+                const ratio = 175 / 690;
                 const threshold = viewportHeight * ratio; // 計算閾值
                 
                 if (draggable.y > threshold) {
