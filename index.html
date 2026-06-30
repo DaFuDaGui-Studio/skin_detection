@@ -813,8 +813,8 @@
               突然，池水中有東西慢慢浮上來。<br/><span class="font-black">你伸手接住的是？</span>
             </h2>
           </div>
-          <div id="hand" class="absolute -bottom-76 left-10 w-125">
-            <img src="./assets/items/hand.png" class="w-125 h-auto"/>
+          <div id="hand" class="absolute -bottom-106 left-50 w-125 rotate-10">
+            <img src="./assets/items/hand.png" class="w-125 h-auto scale-160"/>
           </div>
           <div id="horse-item" @click="moveHand('horse', 0)" class="animal-item absolute left-12.25 top-54">
             <img src="./assets/items/horse.png" class="w-26.5 h-auto"/>
@@ -959,7 +959,7 @@
                     <!-- Description Row -->
                     <div class="flex items-center gap-2.5 h-15 w-full">
                       <!-- Badge -->
-                      <div class="flex items-center justify-center w-15 h-15 rounded-full border border-black shrink-0">
+                      <div x-show="item.taiwan" class="flex items-center justify-center w-15 h-15 rounded-full border border-black shrink-0">
                         <span class="text-sm font-medium tracking-[1.4px] text-center text-black font-noto-sans-tc leading-tight">
                           台灣<br/>企劃
                         </span>
@@ -1027,7 +1027,7 @@
     <script>
       function quiz() {
         return {
-          screen: 'start',
+          screen: 'q3',
           flash: false,
           introLeaving: false,
           resultAnimal: '',
@@ -1071,9 +1071,10 @@
                 '容易出油的肌膚',
                 '想維持皮脂平衡',
                 '在意粉刺毛孔問題',
-                '想調整粗糙皮膚'
+                '想調整粗糙肌膚'
               ],
               'serials': '清新臉部保養系列特集',
+              'taiwan': true,
               'serialsLink': 'https://www.muji.tw/tw/feature/25ss/clearcare/',
               'shareImage': './assets/animal/horse/share.jpg',
               'productImage': './assets/animal/horse/product.png',
@@ -1084,7 +1085,7 @@
               'name': '丹頂仙鶴',
               'animal': 'bird',
               'title': '高濃度美容液系列',
-              'subtitle': '溫和結合成分特性，提升護膚效能',
+              'subtitle': '溫和結合成分特性提升護膚效能',
               'list': [
                 '增強肌膚防禦力',
                 '在意瑕疵想要改善膚質',
@@ -1092,7 +1093,8 @@
                 '想要調理角質，緊緻毛孔'
               ],
               'serials': '臉部保養系列',
-              'serialsLink': 'https://www.muji.tw/tw/feature/25aw/skincare/?utm_source=mujitw&utm_medium=muji-feature&utm_term=skincare',
+              'taiwan': true,
+              'serialsLink': 'https://shop.muji.tw/muji-journal/feature/25aw/skincare/',
               'shareImage': './assets/animal/bird/share.jpg',
               'productImage': './assets/animal/bird/product.png',
               'serialsImage': './assets/animal/bird/serial.jpeg',
@@ -1109,7 +1111,8 @@
                 '在意失去彈性的肌膚'
               ],
               'serials': '水漾潤澤臉部保養系列特集',
-              'serialsLink': 'https://www.muji.tw/tw/feature/25aw/lustreglass/?utm_source=mujitw&utm_medium=muji-feature&utm_term=25aw-lustreglass ',
+              'taiwan': false,
+              'serialsLink': 'https://www.muji.tw/muji-journal/feature/25aw/lustreglass/?_gl=1*ih8lxc*_gcl_au*MTYzMzg1MTc5MC4xNzgyODI3NTY3*_ga*MTE4NzI5ODE3OS4xNzgyODI3NTY3*_ga_361YVPYLP7*czE3ODI4Mjc1NjYkbzEkZzEkdDE3ODI4Mjg1MDIkajU5JGwwJGgw',
               'shareImage': './assets/animal/fish/share.jpg',
               'productImage': './assets/animal/fish/product.png',
               'serialsImage': './assets/animal/fish/product.png',
@@ -1119,7 +1122,7 @@
               'name': '朝霞福貓',
               'animal': 'cat',
               'title': '米糠發酵臉部保養系列',
-              'subtitle': '溫和滲透肌膚，打造彈性光澤肌',
+              'subtitle': '溫和滲透肌膚，​水潤好吸收',
               'list': [
                 '在意肌膚暗沉',
                 '想維持肌膚緊緻',
@@ -1127,7 +1130,8 @@
                 '喜歡質地輕盈'
               ],
               'serials': '米糠發酵臉部保養系列特集',
-              'serialsLink': 'https://www.muji.tw/tw/feature/24ss/ricebran/?utm_source=mujitw&utm_medium=muji-feature&utm_term=ricebran',
+              'taiwan': true,
+              'serialsLink': 'https://www.muji.tw/muji-journal/feature/24ss/ricebran/?_gl=1*1jmwuef*_gcl_au*MTYzMzg1MTc5MC4xNzgyODI3NTY3*_ga*MTE4NzI5ODE3OS4xNzgyODI3NTY3*_ga_361YVPYLP7*czE3ODI4Mjc1NjYkbzEkZzEkdDE3ODI4Mjg2ODUkajU5JGwwJGgw',
               'shareImage': './assets/animal/cat/share.jpg',
               'productImage': './assets/animal/cat/product.png',
               'serialsImage': './assets/animal/cat/product.png',
@@ -1137,14 +1141,15 @@
               'name': '風間白兔',
               'animal': 'rabbit',
               'title': '敏感肌臉部保養系列',
-              'subtitle': '低刺激性，專為敏感肌打造',
+              'subtitle': '溫和保養，專為敏感肌打造',
               'list': [
                 '在意肌膚乾燥',
                 '容易在季節交替時感到不適',
                 '容易感到刺激'
               ],
               'serials': '敏感肌臉部保養系列特集',
-              'serialsLink': 'https://www.muji.tw/tw/feature/25ss/sensitiveskin/?utm_source=mujitw&utm_medium=muji-feature&utm_term=sensitiveskin',
+              'taiwan': false,
+              'serialsLink': 'https://www.muji.tw/muji-journal/feature/25ss/sensitiveskin/?_gl=1*3cp898*_gcl_au*MTYzMzg1MTc5MC4xNzgyODI3NTY3*_ga*MTE4NzI5ODE3OS4xNzgyODI3NTY3*_ga_361YVPYLP7*czE3ODI4Mjc1NjYkbzEkZzEkdDE3ODI4MjgzMzEkajYwJGwwJGgw',
               'shareImage': './assets/animal/rabbit/share.jpg',
               'productImage': './assets/animal/rabbit/product.png',
               'serialsImage': './assets/animal/rabbit/product.png',
@@ -1401,13 +1406,13 @@
               const itemRect = item.getBoundingClientRect();
               const parentRect = parent.getBoundingClientRect();
 
-              const targetTop = itemRect.top - parentRect.top - 120;
+              const targetTop = itemRect.top - parentRect.top;
               const currentTop = handRect.top - parentRect.top;
-              const translateY = targetTop - currentTop;
+              const translateY = targetTop - currentTop + 80;
 
               const itemCenterX = itemRect.left - parentRect.left + itemRect.width / 2;
               const handCenterX = handRect.left - parentRect.left + handRect.width / 2;
-              const translateX = itemCenterX - handCenterX;
+              const translateX = itemCenterX - handCenterX + 150;
 
               anime.animate('#hand', {
                 translateX,
@@ -1416,49 +1421,65 @@
                 ease: 'easeOutQuad',
                 onComplete: () => {
                   setTimeout(() => {
-                    // 手淡出
-                    anime.animate('#hand', { opacity: [1, 0], duration: 400, ease: 'easeOutQuad' });
-
-                    // 被選到的 item 同時: 換圖、放大、移動、角度
                     const img = item.querySelector('img');
-                    img.src = `./assets/active/${animal}.png`;
 
-                    const targetWidth = 28.5 * 4; // w-28.5 = 114px
-                    const itemRect2 = item.getBoundingClientRect();
-                    const parentRect2 = parent.getBoundingClientRect();
-                    const targetItemTop = 25 * 4; // top-25 = 100px
-                    const targetItemLeft = parentRect2.width / 2 - targetWidth / 2; // 以新寬度置中
-                    const deltaX = targetItemLeft - (itemRect2.left - parentRect2.left);
-                    const deltaY = targetItemTop - (itemRect2.top - parentRect2.top);
-
-                    anime.animate(item, {
-                      translateX: deltaX,
-                      translateY: deltaY,
-                      ...(animal !== 'bird' && { rotate: -19 }),
-                      duration: 1000,
-                      ease: 'easeOutQuad',
-                    });
+                    // 1. 原圖淡出
                     anime.animate(img, {
-                      width: [itemRect2.width, targetWidth],
-                      duration: 1000,
+                      opacity: [1, 0],
+                      duration: 300,
                       ease: 'easeOutQuad',
                       onComplete: () => {
-                        this.screen = 'drag';
-                      }
-                    });
-
-                    setTimeout(() => {
-                      // #item_can_back 跟 #item_can_front 同步移動到 -bottom-37
-                      ['item_can_back', 'item_can_front'].forEach(id => {
-                        const el = document.getElementById(id);
-                        el.classList.remove('hidden');
-                        anime.animate(el, {
-                          bottom: ['-100%', `${-37 * 4}px`],
+                        // 換成新圖，新圖淡入
+                        img.src = `./assets/active/${animal}.png`;
+                        anime.animate(img, {
+                          opacity: [0, 1],
                           duration: 800,
                           ease: 'easeOutQuad',
+                          onComplete: () => {
+                            // 2. 手淡出
+                            anime.animate('#hand', { opacity: [1, 0], duration: 400, ease: 'easeOutQuad' });
+
+                            // 被選到的 item: 放大、移動、角度
+                            const targetWidth = 28.5 * 4; // w-28.5 = 114px
+                            const itemRect2 = item.getBoundingClientRect();
+                            const parentRect2 = parent.getBoundingClientRect();
+                            const targetItemTop = 25 * 4; // top-25 = 100px
+                            const targetItemLeft = parentRect2.width / 2 - targetWidth / 2; // 以新寬度置中
+                            const deltaX = targetItemLeft - (itemRect2.left - parentRect2.left);
+                            const deltaY = targetItemTop - (itemRect2.top - parentRect2.top);
+
+                            anime.animate(item, {
+                              translateX: deltaX,
+                              translateY: deltaY,
+                              ...(animal !== 'bird' && { rotate: -19 }),
+                              duration: 1000,
+                              ease: 'easeOutQuad',
+                            });
+                            anime.animate(img, {
+                              width: [itemRect2.width, targetWidth],
+                              duration: 1000,
+                              ease: 'easeOutQuad',
+                              onComplete: () => {
+                                this.screen = 'drag';
+                              }
+                            });
+
+                            setTimeout(() => {
+                              // #item_can_back 跟 #item_can_front 同步移動到 -bottom-37
+                              ['item_can_back', 'item_can_front'].forEach(id => {
+                                const el = document.getElementById(id);
+                                el.classList.remove('hidden');
+                                anime.animate(el, {
+                                  bottom: ['-100%', `${-37 * 4}px`],
+                                  duration: 800,
+                                  ease: 'easeOutQuad',
+                                });
+                              });
+                            }, 200)
+                          }
                         });
-                      });
-                    }, 200)
+                      }
+                    });
                   }, 500)
                 },
               });
