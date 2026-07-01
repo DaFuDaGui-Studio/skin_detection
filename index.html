@@ -212,11 +212,11 @@
         animation: bridge-bg-zoom 1.2s ease-in forwards;
       }
       @keyframes bridge-zoom {
-        from { transform: scale(1); }
-        to   { transform: scale(2.4); }
+        from { transform: translateY(0) scale(1); }
+        to   { transform: translateY(10%) scale(2.4); }
       }
       .animate-bridge-zoom {
-        transform-origin: 50% 100%;
+        transform-origin: 50% 50%;
         animation: bridge-zoom 1.2s ease-in forwards;
       }
       @keyframes fade-out-up {
@@ -550,9 +550,9 @@
           <!-- 白色覆蓋層（FFFFFF 75%） -->
           <div class="absolute inset-0 bg-white/75 pointer-events-none"></div>
 
-          <!-- 橋（置中靠底，動畫只做 scale → 原地放大不位移） -->
+          <!-- 橋 -->
           <div class="absolute inset-x-0 bottom-0 flex justify-center pointer-events-none">
-            <img src="./assets/2_Bridge.png" alt="" class="w-[24.375rem] h-[22.5rem] flex-none origin-bottom" :class="introLeaving ? 'animate-bridge-zoom' : 'animate-fade-in [animation-delay:0.7s]'">
+            <img src="./assets/2_Bridge.png" alt="" class="w-[24.375rem] h-[22.5rem] flex-none origin-center" :class="introLeaving ? 'animate-bridge-zoom' : 'animate-fade-in [animation-delay:0.7s]'">
           </div>
 
           <!-- 底部白色線性漸層（下白 100% → 上白 0%） -->
@@ -1211,7 +1211,7 @@
             this.introLeaving = true;          // 橋與池放大、開場文字與按鈕淡出
             setTimeout(() => {
               this.flash = true;               // 放大尾聲時白幕淡入，畫面變白
-            }, 900);
+            }, 750);
             setTimeout(() => {
               this.screen = 'q1';              // 白幕下切換到問題一
               this.introLeaving = false;       // 還原前導狀態
