@@ -149,12 +149,18 @@
         text-orientation: upright;
       }
 
-      /* 星星閃光：縮放 + 閃爍 */
-      @keyframes twinkle {
-        0%, 100% { opacity: 0.35; transform: scale(0.7); }
-        50%      { opacity: 1;    transform: scale(1.25); }
+      /* 星星閃光：兩顆用不同節奏、不對稱關鍵影格，錯開成呼吸感 */
+      @keyframes twinkle-a {
+        0%, 100% { opacity: 0.40; transform: scale(0.80); }
+        45%      { opacity: 1.00; transform: scale(1.20); }
       }
-      .animate-twinkle { animation: twinkle 1.8s ease-in-out infinite; }
+      @keyframes twinkle-b {
+        0%, 100% { opacity: 0.40; transform: scale(0.75); }
+        55%      { opacity: 1.00; transform: scale(1.22); }
+      }
+      /* 週期長度刻意不同（1.6s vs 1.8s），永遠不會整齊對齊 */
+      .animate-twinkle-a { animation: twinkle-a 1.6s ease-in-out infinite; }
+      .animate-twinkle-b { animation: twinkle-b 1.8s ease-in-out infinite; }
 
       /* 按鈕：縮放脈動 */
       @keyframes pulse-scale {
@@ -495,9 +501,9 @@
               美肌守護神
             </h1>
             <!-- 星星：相對罐子圖片定位（左上 / 右下） -->
-            <img src="./assets/1_Star.png" alt="" class="absolute top-[54px] left-[104px] w-[18px] h-[18px] animate-twinkle">
-            <img src="./assets/1_Star.png" alt="" class="absolute bottom-[118px] right-[104px] w-[15px] h-[15px] animate-twinkle [animation-delay:0.9s]">
-            <div class="absolute left-1/2 -translate-x-1/2 bottom-8 z-10">
+            <img src="./assets/1_Star.png" alt="" class="absolute top-[54px] left-[104px] w-[18px] h-[18px] animate-twinkle-a">
+            <img src="./assets/1_Star.png" alt="" class="absolute bottom-[118px] right-[104px] w-[15px] h-[15px] animate-twinkle-b" style="animation-delay:-1.1s">
+            <div class="absolute left-1/2 -translate-x-1/2 top-[316px] z-10">
               <button
                 class="btn-primary !w-[8.75rem] h-[3.125rem] !py-0 !rounded-[0.625rem] overflow-hidden animate-pulse-scale
                        !text-muji-red font-black !text-[1.25rem] leading-[1.875rem] !tracking-[0.1em] !bg-white"
